@@ -2,8 +2,8 @@ package fastpushclient
 
 import (
 	"fmt"
+	"github.com/lgphp/go-fastpushclient/logger"
 	"github.com/pkg/errors"
-	"push-sdk-go/logger"
 )
 
 func NewFastLivePushClient(appInfo AppInfo) *Client {

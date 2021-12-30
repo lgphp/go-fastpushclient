@@ -3,10 +3,10 @@ package fastpushclient
 import (
 	"errors"
 	"fmt"
+	"github.com/lgphp/go-fastpushclient/client/utils"
+	"github.com/lgphp/go-fastpushclient/logger"
 	"github.com/parnurzeal/gorequest"
 	"net/http"
-	"push-sdk-go/client/utils"
-	"push-sdk-go/logger"
 	"strconv"
 	"strings"
 	"time"

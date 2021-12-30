@@ -1,11 +1,12 @@
 package fastpushclient
 
 import (
+	"github.com/go-netty/go-netty"
 	"github.com/go-netty/go-netty/codec"
 	"github.com/go-netty/go-netty/utils"
+	"github.com/lgphp/go-fastpushclient/bytebuf"
+	"github.com/lgphp/go-fastpushclient/logger"
 	"github.com/pkg/errors"
-	"push-sdk-go/bytebuf"
-	"push-sdk-go/logger"
 )
 
 type CodecHandler struct {

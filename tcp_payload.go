@@ -2,12 +2,12 @@ package fastpushclient
 
 import (
 	"encoding/json"
+	"github.com/lgphp/go-fastpushclient/bytebuf"
+	"github.com/lgphp/go-fastpushclient/logger"
+	"github.com/lgphp/go-fastpushclient/utils"
 	"github.com/pkg/errors"
 	"github.com/rogpeppe/fastuuid"
 	"github.com/wumansgy/goEncrypt"
-	"push-sdk-go/bytebuf"
-	"push-sdk-go/client/utils"
-	"push-sdk-go/logger"
 )
 
 type Payloadble interface {

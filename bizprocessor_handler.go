@@ -1,8 +1,8 @@
 package fastpushclient
 
 import (
+	"github.com/go-netty/go-netty"
 	"github.com/pkg/errors"
-	"push-sdk-go/logger"
 )
 
 type BizProcessorHandler struct {

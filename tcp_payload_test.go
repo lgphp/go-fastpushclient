@@ -2,9 +2,9 @@ package fastpushclient
 
 import (
 	"encoding/base64"
+	"github.com/lgphp/go-fastpushclient/utils"
 	"github.com/rogpeppe/fastuuid"
 	"github.com/wumansgy/goEncrypt"
-	"push-sdk-go/client/utils"
 	"testing"
 )
 

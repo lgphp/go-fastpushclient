@@ -3,8 +3,9 @@ package fastpushclient
 import (
 	"errors"
 	"fmt"
+	"github.com/go-netty/go-netty"
 	"github.com/go-netty/go-netty/transport/tcp"
-	"push-sdk-go/logger"
+	"github.com/lgphp/go-fastpushclient/logger"
 	"time"
 )
 

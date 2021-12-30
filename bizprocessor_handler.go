@@ -2,6 +2,7 @@ package fastpushclient
 
 import (
 	"github.com/go-netty/go-netty"
+	"github.com/lgphp/go-fastpushclient/logger"
 	"github.com/pkg/errors"
 )
 

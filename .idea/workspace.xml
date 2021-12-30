@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="998a5204-24d1-479a-b392-d02b980d471c" name="Default Changelist" comment="" />
+    <list default="true" id="998a5204-24d1-479a-b392-d02b980d471c" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,7 +28,7 @@
         <entry file="file://$PROJECT_DIR$/go.mod">
           <provider selected="true" editor-type-id="text-editor">
             <state>
-              <caret column="41" lean-forward="true" selection-start-column="7" selection-end-column="41" />
+              <caret column="41" selection-start-column="7" selection-end-column="41" />
             </state>
           </provider>
         </entry>
@@ -37,19 +39,28 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/api_connect_manager.go">
+        <entry file="file://$PROJECT_DIR$/fastpushclient/api_connect_manager.go">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="144">
-              <caret line="17" column="4" selection-start-line="17" selection-start-column="4" selection-end-line="17" selection-end-column="4" />
+              <caret line="16" column="4" selection-start-line="16" selection-start-column="4" selection-end-line="16" selection-end-column="4" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/fastpushclient/api_connect_manager_test.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="264">
+              <caret line="11" selection-start-line="11" selection-end-line="11" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/client/api_connect_manager_test.go">
+        <entry file="file://$PROJECT_DIR$/fastpushclient/message_payload.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="360">
-              <caret line="15" column="1" selection-start-line="15" selection-start-column="1" selection-end-line="15" selection-end-column="1" />
+            <state relative-caret-position="336">
+              <caret line="14" column="1" selection-start-line="14" selection-start-column="1" selection-end-line="14" selection-end-column="1" />
             </state>
           </provider>
         </entry>
@@ -146,6 +157,8 @@
         <option value="$PROJECT_DIR$/go.mod" />
         <option value="$PROJECT_DIR$/cmd/main.go" />
         <option value="$PROJECT_DIR$/client/api_connect_manager_test.go" />
+        <option value="$PROJECT_DIR$/fastpushclient/api_connect_manager_test.go" />
+        <option value="$PROJECT_DIR$/fastpushclient/message_payload.go" />
       </list>
     </option>
   </component>
@@ -171,11 +184,6 @@
             <path>
               <item name="go-fastpushclient" type="b2602c69:ProjectViewProjectNode" />
               <item name="go-fastpushclient" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="go-fastpushclient" type="b2602c69:ProjectViewProjectNode" />
-              <item name="go-fastpushclient" type="462c0819:PsiDirectoryNode" />
-              <item name="client" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -337,15 +345,15 @@
     </history-entry>
   </component>
   <component name="ToolWindowManager">
-    <frame x="137" y="68" width="1656" height="1020" extended-state="0" />
+    <frame x="24" y="23" width="1656" height="1020" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.42017326" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.42017326" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info active="true" anchor="bottom" id="Find" order="1" visible="true" weight="0.3295711" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.32392776" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.3295711" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.32392776" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -353,7 +361,7 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="8" />
       <window_info anchor="bottom" id="Version Control" order="9" />
-      <window_info anchor="bottom" id="Terminal" order="10" weight="0.5282167" />
+      <window_info anchor="bottom" id="Terminal" order="10" weight="0.27539504" />
       <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -368,7 +376,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="[fix] module struct" />
-    <option name="LAST_COMMIT_MESSAGE" value="[fix] module struct" />
+    <MESSAGE value="init" />
+    <option name="LAST_COMMIT_MESSAGE" value="init" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
@@ -469,10 +478,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/client/client_entity.go" />
-    <entry file="file://$PROJECT_DIR$/client/utils/key_utils.go" />
-    <entry file="file://$PROJECT_DIR$/client/utils/zip_utils.go" />
-    <entry file="file://$PROJECT_DIR$/client/client_entity_test.go" />
+    <entry file="file://$PROJECT_DIR$/fastpushclient/client_entity.go" />
+    <entry file="file://$PROJECT_DIR$/fastpushclient/utils/key_utils.go" />
+    <entry file="file://$PROJECT_DIR$/fastpushclient/utils/zip_utils.go" />
+    <entry file="file://$PROJECT_DIR$/fastpushclient/client_entity_test.go" />
     <entry file="file:///usr/local/go/src/net/http/header.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="158">
@@ -490,7 +499,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/client/utils/apisign_utils.go" />
+    <entry file="file://$PROJECT_DIR$/fastpushclient/utils/apisign_utils.go" />
     <entry file="file://$PROJECT_DIR$/../pkg/mod/github.com/go-netty/go-netty@v0.0.0-20210318115346-68000ac9a2c6/go.mod">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -501,14 +510,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/client/listener_manager.go" />
-    <entry file="file://$PROJECT_DIR$/client/message_payload.go" />
-    <entry file="file://$PROJECT_DIR$/client/http_payload.go" />
-    <entry file="file://$PROJECT_DIR$/client/exception_handler.go" />
-    <entry file="file://$PROJECT_DIR$/client/event_handler.go" />
-    <entry file="file://$PROJECT_DIR$/client/codec_hanlder.go" />
+    <entry file="file://$PROJECT_DIR$/fastpushclient/listener_manager.go" />
+    <entry file="file://$PROJECT_DIR$/fastpushclient/http_payload.go" />
+    <entry file="file://$PROJECT_DIR$/fastpushclient/exception_handler.go" />
+    <entry file="file://$PROJECT_DIR$/fastpushclient/event_handler.go" />
+    <entry file="file://$PROJECT_DIR$/fastpushclient/codec_hanlder.go" />
     <entry file="file://$PROJECT_DIR$/bytebuf/put.go" />
-    <entry file="file://$PROJECT_DIR$/client/tcp_connect_manager.go" />
+    <entry file="file://$PROJECT_DIR$/fastpushclient/tcp_connect_manager.go" />
     <entry file="file://$PROJECT_DIR$/logger/logger.go" />
     <entry file="file://$PROJECT_DIR$/../pkg/mod/github.com/rogpeppe/fastuuid@v1.2.0/uuid.go">
       <provider selected="true" editor-type-id="text-editor" />
@@ -535,12 +543,12 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/go.sum" />
-    <entry file="file://$PROJECT_DIR$/client/tcp_payload.go" />
+    <entry file="file://$PROJECT_DIR$/fastpushclient/tcp_payload.go" />
     <entry file="file://$PROJECT_DIR$/Readme.md" />
     <entry file="file://$PROJECT_DIR$/.gitignore" />
-    <entry file="file://$PROJECT_DIR$/client/client_core_lib.go" />
-    <entry file="file://$PROJECT_DIR$/client/tcp_payload_test.go" />
-    <entry file="file://$PROJECT_DIR$/client/bizprocessor_handler.go" />
+    <entry file="file://$PROJECT_DIR$/fastpushclient/client_core_lib.go" />
+    <entry file="file://$PROJECT_DIR$/fastpushclient/tcp_payload_test.go" />
+    <entry file="file://$PROJECT_DIR$/fastpushclient/bizprocessor_handler.go" />
     <entry file="file://$PROJECT_DIR$/../pkg/mod/github.com/pkg/errors@v0.9.1/go113.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="168">
@@ -554,7 +562,7 @@
     <entry file="file://$PROJECT_DIR$/go.mod">
       <provider selected="true" editor-type-id="text-editor">
         <state>
-          <caret column="41" lean-forward="true" selection-start-column="7" selection-end-column="41" />
+          <caret column="41" selection-start-column="7" selection-end-column="41" />
         </state>
       </provider>
     </entry>
@@ -568,17 +576,24 @@
     <entry file="file://$PROJECT_DIR$/bytebuf/get.go">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/client/api_connect_manager.go">
+    <entry file="file://$PROJECT_DIR$/fastpushclient/api_connect_manager.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="144">
-          <caret line="17" column="4" selection-start-line="17" selection-start-column="4" selection-end-line="17" selection-end-column="4" />
+          <caret line="16" column="4" selection-start-line="16" selection-start-column="4" selection-end-line="16" selection-end-column="4" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/client/api_connect_manager_test.go">
+    <entry file="file://$PROJECT_DIR$/fastpushclient/api_connect_manager_test.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="15" column="1" selection-start-line="15" selection-start-column="1" selection-end-line="15" selection-end-column="1" />
+        <state relative-caret-position="264">
+          <caret line="11" selection-start-line="11" selection-end-line="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fastpushclient/message_payload.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="336">
+          <caret line="14" column="1" selection-start-line="14" selection-start-column="1" selection-end-line="14" selection-end-column="1" />
         </state>
       </provider>
     </entry>

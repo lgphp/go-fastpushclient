@@ -3,6 +3,7 @@ package fastpushclient
 import (
 	"errors"
 	"fmt"
+	"github.com/bitly/go-simplejson"
 	"github.com/lgphp/go-fastpushclient/logger"
 	"github.com/lgphp/go-fastpushclient/utils"
 	"github.com/parnurzeal/gorequest"

@@ -1,5 +1,7 @@
 package fastpushclient
 
+import "github.com/go-netty/go-netty"
+
 type ExceptionHandler struct {
 	netty.ExceptionHandler
 	name string

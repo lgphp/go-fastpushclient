@@ -2,6 +2,7 @@ package fastpushclient
 
 import (
 	"encoding/base64"
+	"github.com/go-netty/go-netty"
 	"github.com/rogpeppe/fastuuid"
 	"sync"
 )

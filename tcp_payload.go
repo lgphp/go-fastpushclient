@@ -27,14 +27,15 @@ type NotificationClassify = byte
 type MessagePrior = byte
 
 var (
-	HeartBeatCode    PayloadCode = 10000
-	ConnAuthCode     PayloadCode = 20000
-	ConnAuthRespCode PayloadCode = 20001
-	PushMessageCode  PayloadCode = 30000
-	TokenUploadCode  PayloadCode = 40000
-	APNS             SPChannel   = 10
-	FCM              SPChannel   = 11
-	HCM              SPChannel   = 12
+	HeartBeatCode      PayloadCode = 10000
+	ConnAuthCode       PayloadCode = 20000
+	ConnAuthRespCode   PayloadCode = 20001
+	PushMessageCode    PayloadCode = 30000
+	PushMessageACKCode PayloadCode = 30001
+	TokenUploadCode    PayloadCode = 40000
+	APNS               SPChannel   = 10
+	FCM                SPChannel   = 11
+	HCM                SPChannel   = 12
 
 	Push         NotificationClassify = 1
 	SMS          NotificationClassify = 2
@@ -109,14 +110,14 @@ func (c *TokenUploadPayload) Unpack(buf *bytebuf.ByteBuf, _ *Client) {
 }
 
 type heartBeatPayload struct {
-	PayloadCode uint16
-	Zero        byte
+	payloadCode uint16
+	zero        byte
 }
 
 func newHeartBeatPayload() heartBeatPayload {
 	return heartBeatPayload{
-		PayloadCode: HeartBeatCode,
-		Zero:        0,
+		payloadCode: HeartBeatCode,
+		zero:        0,
 	}
 }
 
@@ -127,8 +128,8 @@ func (c *heartBeatPayload) Pack(buf *bytebuf.ByteBuf, _ *Client) {
 	// 写版本号
 	_ = buf.WriteByte(1)
 	// 写类型码
-	_ = buf.WriteUInt16BE(c.PayloadCode)
-	_ = buf.WriteByte(c.Zero)
+	_ = buf.WriteUInt16BE(c.payloadCode)
+	_ = buf.WriteByte(c.zero)
 	pktLen := buf.WriterIndex() - 4
 	_ = buf.PutUInt32BE(0, uint32(pktLen))
 }
@@ -140,11 +141,11 @@ func (c *heartBeatPayload) Unpack(buf *bytebuf.ByteBuf, _ *Client) {
 
 // 连接鉴权包
 type connAuthPayload struct {
-	PayloadCode uint16
-	ClientId    string
-	MerchantID  string
-	AppID       string
-	AuthKey     []byte
+	payloadCode uint16
+	clientId    string
+	merchantID  string
+	appID       string
+	authKey     []byte
 }
 
 func (c *connAuthPayload) Pack(buf *bytebuf.ByteBuf, _ *Client) {
@@ -153,28 +154,28 @@ func (c *connAuthPayload) Pack(buf *bytebuf.ByteBuf, _ *Client) {
 	// 写版本号
 	_ = buf.WriteByte(1)
 	// 写类型码
-	_ = buf.WriteUInt16BE(c.PayloadCode)
+	_ = buf.WriteUInt16BE(c.payloadCode)
 
 	// 写ClientID
-	clientIdBytes := []byte(c.ClientId)
+	clientIdBytes := []byte(c.clientId)
 	clientIdLen := byte(len(clientIdBytes))
 	_ = buf.WriteByte(clientIdLen)
 	_ = buf.WriteBytes(clientIdBytes)
 
 	// 写merchantID
-	merchantIdBytes := []byte(c.MerchantID)
+	merchantIdBytes := []byte(c.merchantID)
 	merchantIdLen := byte(len(merchantIdBytes))
 	_ = buf.WriteByte(merchantIdLen)
 	_ = buf.WriteBytes(merchantIdBytes)
 
 	//写appID
-	appIdBytes := []byte(c.AppID)
+	appIdBytes := []byte(c.appID)
 	appIdLen := byte(len(appIdBytes))
 	_ = buf.WriteByte(appIdLen)
 	_ = buf.WriteBytes(appIdBytes)
 
 	//写AuthKey
-	_ = buf.WriteBytes(c.AuthKey)
+	_ = buf.WriteBytes(c.authKey)
 	pktLen := buf.WriterIndex() - 4
 	_ = buf.PutUInt32BE(0, uint32(pktLen))
 
@@ -187,25 +188,25 @@ func (c *connAuthPayload) Unpack(buf *bytebuf.ByteBuf, _ *Client) {
 func newConnAuthPayload(clientId string, info AppInfo) connAuthPayload {
 	authKey := utils.GetAuthKey(info.GetAppKey())
 	return connAuthPayload{
-		PayloadCode: ConnAuthCode,
-		ClientId:    clientId,
-		MerchantID:  info.merchantID,
-		AppID:       info.appID,
-		AuthKey:     authKey,
+		payloadCode: ConnAuthCode,
+		clientId:    clientId,
+		merchantID:  info.merchantID,
+		appID:       info.appID,
+		authKey:     authKey,
 	}
 }
 
-// 鉴权回复包
+// 连接认证回应包
 type connAuthRespPayload struct {
-	PayloadCode uint16
-	StatusCode  uint32
-	Message     string
-	ServerTime  uint64
+	payloadCode uint16
+	statusCode  uint32
+	message     string
+	serverTime  uint64
 }
 
 func newConnAuthRespPayload() connAuthRespPayload {
 	return connAuthRespPayload{
-		PayloadCode: ConnAuthRespCode,
+		payloadCode: ConnAuthRespCode,
 	}
 }
 
@@ -216,24 +217,25 @@ func (c *connAuthRespPayload) Pack(buf *bytebuf.ByteBuf, _ *Client) {
 func (c *connAuthRespPayload) Unpack(buf *bytebuf.ByteBuf, _ *Client) {
 	// 读取相关
 	code, _ := buf.ReadUInt32BE()
-	c.StatusCode = code
+	c.statusCode = code
 	messageLen, _ := buf.ReadUInt32BE()
 	msg := make([]byte, messageLen)
 	_, _ = buf.ReadBytes(msg)
-	c.Message = string(msg)
+	c.message = string(msg)
 	stime, _ := buf.ReadUInt64BE()
-	c.ServerTime = stime
+	c.serverTime = stime
 }
 
+// PUSH消息包
 type PushMessagePayload struct {
-	PayloadCode uint16
-	MessageID   string
-	Classifier  NotificationClassify
-	MerchantID  string
-	AppID       string
-	Priority    MessagePrior
-	ToUid       string
-	MessageBody []byte
+	payloadCode uint16
+	messageID   string
+	classifier  NotificationClassify
+	merchantID  string
+	appID       string
+	priority    MessagePrior
+	toUid       string
+	messageBody []byte
 }
 
 func (p *PushMessagePayload) Pack(buf *bytebuf.ByteBuf, client *Client) {
@@ -242,23 +244,23 @@ func (p *PushMessagePayload) Pack(buf *bytebuf.ByteBuf, client *Client) {
 	// 写版本号
 	_ = buf.WriteByte(1)
 	// 写类型码
-	_ = buf.WriteUInt16BE(p.PayloadCode)
+	_ = buf.WriteUInt16BE(p.payloadCode)
 	// 写messageID
 	messageIdBytes := []byte(fastuuid.MustNewGenerator().Hex128())
 	messageIdLen := byte(len(messageIdBytes))
 	_ = buf.WriteByte(messageIdLen)
 	_ = buf.WriteBytes(messageIdBytes)
 	// 写通知分类
-	_ = buf.WriteByte(p.Classifier)
+	_ = buf.WriteByte(p.classifier)
 
 	// 写merchantID
-	merchantIdBytes := []byte(p.MerchantID)
+	merchantIdBytes := []byte(p.merchantID)
 	merchantIdLen := byte(len(merchantIdBytes))
 	_ = buf.WriteByte(merchantIdLen)
 	_ = buf.WriteBytes(merchantIdBytes)
 
 	//写appID
-	appIdBytes := []byte(p.AppID)
+	appIdBytes := []byte(p.appID)
 	appIdLen := byte(len(appIdBytes))
 	_ = buf.WriteByte(appIdLen)
 	_ = buf.WriteBytes(appIdBytes)
@@ -266,7 +268,7 @@ func (p *PushMessagePayload) Pack(buf *bytebuf.ByteBuf, client *Client) {
 	// 加密消息,获取消息加密key CBC 模式
 	encMessageKey := utils.GetMsgEncKey(client.appInfo.GetAppKey())
 	encAesIV := utils.GetMsgEncAesIV(client.appInfo.GetAppKey())
-	messageBody, _ := goEncrypt.AesCbcEncrypt(p.MessageBody, encMessageKey, encAesIV)
+	messageBody, _ := goEncrypt.AesCbcEncrypt(p.messageBody, encMessageKey, encAesIV)
 	if len(messageBody) > NEED_COMPRESS_SIZE {
 		// 压缩
 		messageBody = utils.Gzip(messageBody)
@@ -275,10 +277,10 @@ func (p *PushMessagePayload) Pack(buf *bytebuf.ByteBuf, client *Client) {
 	// 写加密标志
 	_ = buf.WriteByte(encFlag)
 	// 写优先级
-	_ = buf.WriteByte(p.Priority)
+	_ = buf.WriteByte(p.priority)
 
 	// 写toUserID
-	toUserIdBytes := []byte(p.ToUid)
+	toUserIdBytes := []byte(p.toUid)
 	toUserIdLen := byte(len(toUserIdBytes))
 	_ = buf.WriteByte(toUserIdLen)
 	_ = buf.WriteBytes(toUserIdBytes)
@@ -298,13 +300,59 @@ func NewPushMessagePayloadFromPushNotification(n PushNotification, classifier No
 	messageId := fastuuid.MustNewGenerator().Hex128()
 	messageBody, _ := json.Marshal(n.Body)
 	return PushMessagePayload{
-		PayloadCode: PushMessageCode,
-		MessageID:   messageId,
-		Classifier:  classifier,
-		MerchantID:  app.GetMerchantID(),
-		AppID:       app.GetAppID(),
-		Priority:    n.Priority,
-		ToUid:       n.ToUid,
-		MessageBody: messageBody,
+		payloadCode: PushMessageCode,
+		messageID:   messageId,
+		classifier:  classifier,
+		merchantID:  app.GetMerchantID(),
+		appID:       app.GetAppID(),
+		priority:    n.Priority,
+		toUid:       n.ToUid,
+		messageBody: messageBody,
 	}
+}
+
+// 消息回执包
+type messageAckPayload struct {
+	payloadCode   uint16
+	messageID     string
+	appId         string
+	userId        string
+	statusCode    uint32
+	statusMessage string
+}
+
+func newAckMessageAckPayload() messageAckPayload {
+	return messageAckPayload{
+		payloadCode: PushMessageACKCode,
+	}
+}
+func (c *messageAckPayload) Pack(buf *bytebuf.ByteBuf, _ *Client) {
+	println("无需实现")
+}
+
+func (c *messageAckPayload) Unpack(buf *bytebuf.ByteBuf, _ *Client) {
+	// 读取相关
+	messageIdLen, _ := buf.ReadByte()
+	msgId := make([]byte, messageIdLen)
+	_, _ = buf.ReadBytes(msgId)
+	c.messageID = string(msgId)
+
+	appIdIdLen, _ := buf.ReadByte()
+	appId := make([]byte, appIdIdLen)
+	_, _ = buf.ReadBytes(appId)
+	c.appId = string(appId)
+
+	userIdLen, _ := buf.ReadByte()
+	userId := make([]byte, userIdLen)
+	_, _ = buf.ReadBytes(userId)
+	c.userId = string(userId)
+
+	code, _ := buf.ReadUInt32BE()
+	c.statusCode = code
+
+	statusMsgLen, _ := buf.ReadByte()
+	statusMsg := make([]byte, statusMsgLen)
+	_, _ = buf.ReadBytes(statusMsg)
+	c.statusMessage = string(statusMsg)
+
 }

@@ -13,17 +13,19 @@ type pushGateAddress struct {
 }
 
 type Client struct {
-	wg              *sync.WaitGroup
-	clientId        string
-	appInfo         AppInfo
-	ch              netty.Channel
-	pushGateIpList  []pushGateAddress
-	initialListener Listener
-	sendListener    SendListener
+	wg                    *sync.WaitGroup
+	clientId              string
+	appInfo               AppInfo
+	ch                    netty.Channel
+	pushGateIpList        []pushGateAddress
+	initialListener       InitializedListener
+	sendListener          ClientSendListener
+	messageStatusListener NotificationStatusListener
 	// 是否能发送消息
 	isSendNotification bool
 	// 与服务器时间的差值
-	timeDiff int64
+	timeDiff   int64
+	httpClient HTTPClient
 }
 
 func buildClient() *Client {
@@ -39,13 +41,18 @@ func (c *Client) setappinfo(appInfo AppInfo) {
 	c.appInfo = appInfo
 }
 
-func (c *Client) AddSendListener(l SendListener) *Client {
+func (c *Client) AddSendListener(l ClientSendListener) *Client {
 	c.sendListener = l
 	return c
 }
 
-func (c *Client) AddInitializedListener(l Listener) *Client {
+func (c *Client) AddInitializedListener(l InitializedListener) *Client {
 	c.initialListener = l
+	return c
+}
+
+func (c *Client) AddNotificationStatusListener(l NotificationStatusListener) *Client {
+	c.messageStatusListener = l
 	return c
 }
 

@@ -27,8 +27,12 @@ func (h BizProcessorHandler) HandleRead(ctx netty.InboundContext, message netty.
 	switch message.(type) {
 	case connAuthRespPayload:
 		if payload, ok := message.(connAuthRespPayload); ok {
-			h.client.dealConnAuthResp(payload)
+			h.client.handleConnAuthResp(payload)
 		}
+		break
+	case messageAckPayload:
+		payload := message.(messageAckPayload)
+		h.client.handleMessageACK(payload)
 		break
 	default:
 		logger.Warnw("业务处理器", errors.New("无需处理的Payload"), "payload", message)

@@ -34,6 +34,9 @@ func (h CodecHandler) HandleRead(ctx netty.InboundContext, message netty.Message
 	reader := utils.MustToReader(message)
 	n, _ := reader.Read(h.buffer)
 	buf, _ := bytebuf.NewByteBuf(h.buffer[:n])
+	defer func() {
+		buf.Release()
+	}()
 	if len(buf.AvailableBytes()) < MIN_TCP_PACkET_LENGTH {
 		return
 	}
@@ -52,17 +55,24 @@ func (h CodecHandler) HandleRead(ctx netty.InboundContext, message netty.Message
 		carp.Unpack(buf, h.c)
 		ctx.HandleRead(carp)
 		break
+	case PushMessageACKCode:
+		amap := newAckMessageAckPayload()
+		amap.Unpack(buf, h.c)
+		ctx.HandleRead(amap)
+		break
 	default:
 		logger.Warnw("解码器", errors.New("不需要解码的PayloadCode"),
 			"payloadCode", payloadCode)
 		break
 	}
-	buf.Release()
 }
 
 // 编码
 func (h CodecHandler) HandleWrite(ctx netty.OutboundContext, message netty.Message) {
 	buf, _ := bytebuf.NewByteBuf()
+	defer func() {
+		buf.Release()
+	}()
 	switch message.(type) {
 	case heartBeatPayload:
 		beatPayload := message.(heartBeatPayload)
@@ -89,5 +99,4 @@ func (h CodecHandler) HandleWrite(ctx netty.OutboundContext, message netty.Messa
 			"payload", message)
 		break
 	}
-	buf.Release()
 }

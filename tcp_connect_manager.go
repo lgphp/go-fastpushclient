@@ -76,11 +76,11 @@ func (c *Client) sendConnAuth() {
 }
 
 // 处理连接认证回复
-func (c *Client) dealConnAuthResp(payload connAuthRespPayload) {
-	if payload.StatusCode == Response_Success {
+func (c *Client) handleConnAuthResp(payload connAuthRespPayload) {
+	if payload.statusCode == HTTP_RESPONSE_CODE_OK {
 		// 成功 ==> 发送心跳
 		c.startHeartbeatTask()
-		stime := payload.ServerTime
+		stime := payload.serverTime
 		ctime := time.Now().UnixNano() / 1e6
 		c.timeDiff = int64(stime) - ctime
 		c.initialListener(nil)
@@ -88,9 +88,14 @@ func (c *Client) dealConnAuthResp(payload connAuthRespPayload) {
 	} else {
 		// 鉴权不通过
 		c.isSendNotification = false
-		logger.Warnw("长连接鉴权不通过", errors.New(fmt.Sprintf("code:%v , message:%s", payload.StatusCode, payload.Message)))
-		c.initialListener(errors.New(fmt.Sprintf("code:%v , message:%s", payload.StatusCode, payload.Message)))
+		logger.Warnw("长连接鉴权不通过", errors.New(fmt.Sprintf("code:%v , message:%s", payload.statusCode, payload.message)))
+		c.initialListener(errors.New(fmt.Sprintf("code:%v , message:%s", payload.statusCode, payload.message)))
 	}
+}
+
+// 处理消息回执
+func (c *Client) handleMessageACK(payload messageAckPayload) {
+	c.messageStatusListener(payload.messageID, payload.userId, payload.appId, payload.statusCode, payload.statusMessage)
 }
 
 // 发送心跳

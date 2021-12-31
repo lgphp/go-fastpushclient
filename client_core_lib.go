@@ -10,6 +10,7 @@ func NewFastLivePushClient(appInfo AppInfo) *Client {
 	logger.Infow("开始初始化SDK....")
 	client := buildClient()
 	client.setappinfo(appInfo)
+	client.httpClient = NewFastLivePushHttpClient(appInfo)
 	return client
 }
 
@@ -39,9 +40,9 @@ func (c *Client) SendPushNotification(notification PushNotification) {
 		pushMessage := NewPushMessagePayloadFromPushNotification(notification, Push, &c.appInfo)
 		if c.ch != nil || c.ch.IsActive() {
 			c.ch.Write(pushMessage)
-			c.sendListener(fmt.Sprintf("%s", pushMessage.MessageID), nil)
+			c.sendListener(fmt.Sprintf("%s", pushMessage.messageID), nil)
 		} else {
-			c.sendListener(fmt.Sprintf("%s", pushMessage.MessageID), errors.New("通道已经关闭"))
+			c.sendListener(fmt.Sprintf("%s", pushMessage.messageID), errors.New("通道已经关闭"))
 		}
 	} else {
 		c.sendListener(fmt.Sprintf("不能发送消息:"), errors.New("连接鉴权未完成"))
@@ -55,9 +56,9 @@ func (c *Client) SendVoipNotification(notification PushNotification) {
 		pushMessage := NewPushMessagePayloadFromPushNotification(notification, VOIP, &c.appInfo)
 		if c.ch != nil || c.ch.IsActive() {
 			c.ch.Write(pushMessage)
-			c.sendListener(fmt.Sprintf("%s", pushMessage.MessageID), nil)
+			c.sendListener(fmt.Sprintf("%s", pushMessage.messageID), nil)
 		} else {
-			c.sendListener(fmt.Sprintf("%s", pushMessage.MessageID), errors.New("通道已经关闭"))
+			c.sendListener(fmt.Sprintf("%s", pushMessage.messageID), errors.New("通道已经关闭"))
 		}
 	} else {
 		c.sendListener(fmt.Sprintf("不能发送消息:"), errors.New("连接鉴权未完成"))
@@ -71,9 +72,9 @@ func (c *Client) SendSMSMessage(notification PushNotification) {
 		pushMessage := NewPushMessagePayloadFromPushNotification(notification, SMS, &c.appInfo)
 		if c.ch != nil || c.ch.IsActive() {
 			c.ch.Write(pushMessage)
-			c.sendListener(fmt.Sprintf("%s", pushMessage.MessageID), nil)
+			c.sendListener(fmt.Sprintf("%s", pushMessage.messageID), nil)
 		} else {
-			c.sendListener(fmt.Sprintf("%s", pushMessage.MessageID), errors.New("通道已经关闭"))
+			c.sendListener(fmt.Sprintf("%s", pushMessage.messageID), errors.New("通道已经关闭"))
 		}
 	} else {
 		c.sendListener(fmt.Sprintf("不能发送消息:"), errors.New("连接鉴权未完成"))

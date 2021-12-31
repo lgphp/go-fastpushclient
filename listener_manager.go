@@ -1,9 +1,11 @@
 package fastpushclient
 
-type Listener = func(err error)
-type SendListener = func(messageId string, err error)
+type InitializedListener = func(err error)
+type ClientSendListener = func(messageId string, err error)
+type NotificationStatusListener = func(messageId, toUserId, appId string, statusCode uint32, statusText string)
 
 type Listenerable interface {
-	AddSendListener(l SendListener) *Client
-	AddInitializedListener(l Listener) *Client
+	AddSendListener(l ClientSendListener) *Client
+	AddInitializedListener(l InitializedListener) *Client
+	AddNotificationStatusListener(l NotificationStatusListener) *Client
 }

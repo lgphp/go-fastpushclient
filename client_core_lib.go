@@ -17,16 +17,16 @@ func NewFastLivePushClient(appInfo AppInfo) *Client {
 func (c *Client) BuildConnect() (*Client, error) {
 
 	if c.initialListener == nil {
-		return nil, errors.New("initialListener must not be nil")
+		return nil, errors.New("InitialListener must not be nil")
 	}
 	if c.sendListener == nil {
-		return nil, errors.New("sendListener must not be nil")
+		return nil, errors.New("SendListener must not be nil")
 	}
 	if c.messageStatusListener == nil {
-		return nil, errors.New("messageStatusListener must not be nil")
+		return nil, errors.New("MessageStatusListener must not be nil")
 	}
 	// 获取pushList
-	logger.Infow("will get PushGate server address")
+	logger.Infow("Will get PushGate server address")
 	pushList, err := c.getPushGateIpList()
 	if err != nil {
 		c.initialListener(err)
@@ -34,7 +34,7 @@ func (c *Client) BuildConnect() (*Client, error) {
 	}
 	c.pushGateIpList = pushList
 	// 连接服务端
-	logger.Infow("connect PushGate server")
+	logger.Infow("Connect PushGate server")
 	err = c.connectServer(c.ctx)
 	// 发送ConnAuth
 	if err == nil {
@@ -53,10 +53,10 @@ func (c *Client) SendPushNotification(pushNotification PushNotification) {
 			c.ch.Write(pushMessage)
 			c.sendListener(fmt.Sprintf("%s", pushMessage.messageID), nil)
 		} else {
-			c.sendListener(fmt.Sprintf("%s", pushMessage.messageID), errors.New("connection has been closed"))
+			c.sendListener(fmt.Sprintf("%s", pushMessage.messageID), errors.New("Connection has been closed"))
 		}
 	} else {
-		c.sendListener(fmt.Sprintf("didn't send push message:"), errors.New("authentication of connection not finished"))
+		c.sendListener(fmt.Sprintf("Didn't send push message:"), errors.New("Authentication of connection not finished"))
 	}
 
 }
@@ -69,10 +69,10 @@ func (c *Client) SendVoipNotification(pushNotification PushNotification) {
 			c.ch.Write(pushMessage)
 			c.sendListener(fmt.Sprintf("%s", pushMessage.messageID), nil)
 		} else {
-			c.sendListener(fmt.Sprintf("%s", pushMessage.messageID), errors.New("connection has been closed"))
+			c.sendListener(fmt.Sprintf("%s", pushMessage.messageID), errors.New("Connection has been closed"))
 		}
 	} else {
-		c.sendListener(fmt.Sprintf("didn't send push message:"), errors.New("authentication of connection not finished"))
+		c.sendListener(fmt.Sprintf("Didn't send push message:"), errors.New("Authentication of connection not finished"))
 	}
 
 }
@@ -87,10 +87,10 @@ func (c *Client) SendSMSMessage(smsMessage SmsMessage) {
 			c.ch.Write(pushMessage)
 			c.sendListener(fmt.Sprintf("%s", pushMessage.messageID), nil)
 		} else {
-			c.sendListener(fmt.Sprintf("%s", pushMessage.messageID), errors.New("connection has been closed"))
+			c.sendListener(fmt.Sprintf("%s", pushMessage.messageID), errors.New("Connection has been closed"))
 		}
 	} else {
-		c.sendListener(fmt.Sprintf("didn't send push message:"), errors.New("authentication of connection not finished"))
+		c.sendListener(fmt.Sprintf("Didn't send push message:"), errors.New("Authentication of connection not finished"))
 	}
 
 }

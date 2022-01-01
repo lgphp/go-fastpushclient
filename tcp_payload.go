@@ -32,16 +32,22 @@ var (
 	PushMessageCode    PayloadCode = 30000
 	PushMessageACKCode PayloadCode = 30001
 	TokenUploadCode    PayloadCode = 40000
-	APNS               SPChannel   = 10
-	FCM                SPChannel   = 11
-	HCM                SPChannel   = 12
 
+	// SpChannel enum
+	APNS          SPChannel = 10
+	FCM           SPChannel = 11
+	HCM           SPChannel = 12
+	APPLE_PUSHKIT SPChannel = 60
+	HW_PUSHKIT    SPChannel = 61
+
+	// Notification classifier enum
 	Push         NotificationClassify = 1
 	SMS          NotificationClassify = 2
 	Email        NotificationClassify = 3
 	InnerMessage NotificationClassify = 4
 	VOIP         NotificationClassify = 5
 
+	// Message priority enum
 	HIGH   MessagePrior = 0
 	MIDDLE MessagePrior = 1
 	LOW    MessagePrior = 2

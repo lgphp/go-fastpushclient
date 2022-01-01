@@ -17,7 +17,7 @@ const (
 )
 
 func PrintHttpResponseError(err error, req interface{}) {
-	logger.Warnw("请求失败:", err, "req", req)
+	logger.Warnw("Request failed:", err, "req", req)
 }
 
 // 根据AppID获取PushGateList
@@ -43,13 +43,13 @@ func (c *Client) getPushGateIpList() ([]pushGateAddress, error) {
 				return pushList, nil
 			} else {
 				message, _ := res.Get("message").String()
-				logger.Warnw("获取PushGateList失败", errors.New("Response.Code Not OK"), "req", pushListReq, "Code", code, "Message", message)
+				logger.Warnw("Request PushGate server failed", errors.New("Response.Code Not OK"), "req", pushListReq, "Code", code, "Message", message)
 			}
 		} else {
-			logger.Warnw("获取PushGateList失败", errors.New("response.StatusCode Not OK"), "req", pushListReq, "StatusCode", response.StatusCode)
+			logger.Warnw("Request PushGate server failed", errors.New("Response.StatusCode Not OK"), "req", pushListReq, "StatusCode", response.StatusCode)
 		}
 	} else {
 		PrintHttpResponseError(err, pushListReq)
 	}
-	return nil, errors.New("获取PushGateList失败")
+	return nil, errors.New("Request PushGate server failed")
 }

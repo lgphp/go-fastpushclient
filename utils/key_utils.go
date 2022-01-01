@@ -2,7 +2,7 @@ package utils
 
 import "github.com/lgphp/go-fastpushclient/bytebuf"
 
-// 获取authKey
+// authKey
 func GetAuthKey(appKey []byte) []byte {
 	buf, _ := bytebuf.NewByteBuf(appKey)
 	authKey := make([]byte, 16)
@@ -14,7 +14,7 @@ func GetAuthKey(appKey []byte) []byte {
 	return authKey
 }
 
-// 获取apiKey
+// apiKey
 func GetApiKey(appKey []byte) []byte {
 	buf, _ := bytebuf.NewByteBuf(appKey)
 	apiKey := make([]byte, 16)
@@ -25,7 +25,7 @@ func GetApiKey(appKey []byte) []byte {
 	return apiKey
 }
 
-// 获取消息加密Key
+// message encryption Key
 func GetMsgEncKey(appKey []byte) []byte {
 	buf, _ := bytebuf.NewByteBuf(appKey)
 	encKey := make([]byte, 16)
@@ -37,7 +37,7 @@ func GetMsgEncKey(appKey []byte) []byte {
 	return encKey
 }
 
-// 获取AES IV
+// AES IV
 func GetMsgEncAesIV(appKey []byte) []byte {
 
 	buf, _ := bytebuf.NewByteBuf(appKey)

@@ -5,7 +5,6 @@ import (
 	"github.com/lgphp/go-fastpushclient/bytebuf"
 	"github.com/lgphp/go-fastpushclient/logger"
 	"github.com/lgphp/go-fastpushclient/utils"
-	"github.com/pkg/errors"
 	"github.com/rogpeppe/fastuuid"
 	"github.com/wumansgy/goEncrypt"
 )
@@ -39,7 +38,7 @@ var (
 
 	Push         NotificationClassify = 1
 	SMS          NotificationClassify = 2
-	EMAIL        NotificationClassify = 3
+	Email        NotificationClassify = 3
 	InnerMessage NotificationClassify = 4
 	VOIP         NotificationClassify = 5
 
@@ -136,7 +135,7 @@ func (c *heartBeatPayload) Pack(buf *bytebuf.ByteBuf, _ *Client) {
 
 // 无需解码
 func (c *heartBeatPayload) Unpack(buf *bytebuf.ByteBuf, _ *Client) {
-	println("无需实现")
+	logger.Debugw("no need tp implement")
 }
 
 // 连接鉴权包
@@ -182,7 +181,7 @@ func (c *connAuthPayload) Pack(buf *bytebuf.ByteBuf, _ *Client) {
 }
 
 func (c *connAuthPayload) Unpack(buf *bytebuf.ByteBuf, _ *Client) {
-	println("无需实现")
+	logger.Debugw("no need tp implement")
 }
 
 func newConnAuthPayload(clientId string, info AppInfo) connAuthPayload {
@@ -211,7 +210,7 @@ func newConnAuthRespPayload() connAuthRespPayload {
 }
 
 func (c *connAuthRespPayload) Pack(buf *bytebuf.ByteBuf, _ *Client) {
-	println("无需实现")
+	logger.Debugw("no need tp implement")
 }
 
 func (c *connAuthRespPayload) Unpack(buf *bytebuf.ByteBuf, _ *Client) {
@@ -292,7 +291,7 @@ func (p *PushMessagePayload) Pack(buf *bytebuf.ByteBuf, client *Client) {
 }
 
 func (p *PushMessagePayload) Unpack(buf *bytebuf.ByteBuf, _ *Client) {
-	logger.Warnw("PushMessagePayload#Unpack 客户端无需实现", errors.New("客户端无需实现消息解码"))
+	logger.Debugw("no need tp implement")
 }
 
 // 创建一个新push通知
@@ -327,7 +326,7 @@ func newAckMessageAckPayload() messageAckPayload {
 	}
 }
 func (c *messageAckPayload) Pack(buf *bytebuf.ByteBuf, _ *Client) {
-	println("无需实现")
+	logger.Debugw("no need tp implement")
 }
 
 func (c *messageAckPayload) Unpack(buf *bytebuf.ByteBuf, _ *Client) {

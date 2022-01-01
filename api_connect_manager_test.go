@@ -24,4 +24,7 @@ func TestHttpClient(t *testing.T) {
 		TEST_ENV_APP_ID,
 		TEST_ENV_APP_KEY)
 	NewFastLivePushHttpClient(info)
+	_, _ = NewFastLivePushClient(info).AddNotificationStatusListener(func(messageId, toUserId, appId string, statusCode uint32, statusText string) {
+
+	}).BuildConnect()
 }

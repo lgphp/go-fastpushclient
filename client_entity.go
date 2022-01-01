@@ -1,6 +1,7 @@
 package fastpushclient
 
 import (
+	"context"
 	"encoding/base64"
 	"github.com/go-netty/go-netty"
 	"github.com/rogpeppe/fastuuid"
@@ -21,11 +22,12 @@ type Client struct {
 	initialListener       InitializedListener
 	sendListener          ClientSendListener
 	messageStatusListener NotificationStatusListener
-	// 是否能发送消息
+	// is auth of socket connection  passed ?
 	isSendNotification bool
-	// 与服务器时间的差值
+	// time difference between client and server
 	timeDiff   int64
 	httpClient HTTPClient
+	ctx        context.Context
 }
 
 func buildClient() *Client {
@@ -33,11 +35,11 @@ func buildClient() *Client {
 		wg:             &sync.WaitGroup{},
 		clientId:       fastuuid.MustNewGenerator().Hex128(),
 		pushGateIpList: make([]pushGateAddress, 0),
+		ctx:            context.Background(),
 	}
 }
 
 func (c *Client) setappinfo(appInfo AppInfo) {
-
 	c.appInfo = appInfo
 }
 

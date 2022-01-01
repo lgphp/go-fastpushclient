@@ -25,6 +25,7 @@ func fmtErrors(errs []error) error {
 	return errors.New(errMsg)
 }
 
+// post method
 func (hc *HTTPClient) Post(url string, reqBody interface{}) (resp gorequest.Response, data []byte, err error) {
 	signature := utils.MakeApiSignature(reqBody, utils.GetApiKey(hc.info.appKey))
 	send := gorequest.New().Post(url).Timeout(time.Second * 5).Send(reqBody)

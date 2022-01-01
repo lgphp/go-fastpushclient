@@ -29,19 +29,3 @@ func newPushListRequest(appID string) pushList {
 		AppID: appID,
 	}
 }
-
-type bindToken struct {
-	UserID  string `json:"userID,omitempty"`
-	AppID   string `json:"appID,omitempty"`
-	Channel string `json:"channel,omitempty"`
-	Token   string `json:"token,omitempty"`
-}
-
-func newBindTokenRequest(appID, userID, channel, token string) bindToken {
-	return bindToken{
-		UserID:  userID,
-		AppID:   appID,
-		Channel: channel,
-		Token:   token,
-	}
-}

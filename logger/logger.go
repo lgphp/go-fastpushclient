@@ -24,7 +24,7 @@ func GetLogger() logr.Logger {
 
 // Note: only pass in logr.Logger with default depth
 func SetLogger(l logr.Logger) {
-	defaultLogger = l.WithCallDepth(1).WithName("FastLivePush-go-sdk")
+	defaultLogger = l.WithCallDepth(1).WithName("FastLivePushClient")
 }
 
 func LoggerFactory() logging.LoggerFactory {

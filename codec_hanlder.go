@@ -61,7 +61,7 @@ func (h CodecHandler) HandleRead(ctx netty.InboundContext, message netty.Message
 		ctx.HandleRead(amap)
 		break
 	default:
-		logger.Warnw("解码器", errors.New("不需要解码的PayloadCode"),
+		logger.Warnw("decoder", errors.New("unknow PayloadCode"),
 			"payloadCode", payloadCode)
 		break
 	}
@@ -95,7 +95,7 @@ func (h CodecHandler) HandleWrite(ctx netty.OutboundContext, message netty.Messa
 		ctx.Write(buf.AvailableBytes())
 		break
 	default:
-		logger.Warnw("编码器", errors.New("不能识别的Payload,不能编码"),
+		logger.Warnw("encoder", errors.New("unknow Payload"),
 			"payload", message)
 		break
 	}

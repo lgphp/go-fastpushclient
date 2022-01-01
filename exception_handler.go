@@ -1,6 +1,9 @@
 package fastpushclient
 
-import "github.com/go-netty/go-netty"
+import (
+	"github.com/go-netty/go-netty"
+	"github.com/lgphp/go-fastpushclient/logger"
+)
 
 type ExceptionHandler struct {
 	netty.ExceptionHandler
@@ -14,5 +17,5 @@ func newExceptionHandler(name string) ExceptionHandler {
 }
 
 func (h ExceptionHandler) HandleException(ctx netty.ExceptionContext, ex netty.Exception) {
-	//logger.Warnw("异常处理器获得异常" , ex)
+	logger.Warnw("exception handler:", ex)
 }

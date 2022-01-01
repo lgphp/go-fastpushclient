@@ -1,6 +1,7 @@
 package fastpushclient
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/go-netty/go-netty"
@@ -9,26 +10,21 @@ import (
 	"time"
 )
 
-func (c *Client) pipeLineInitializer() func(channel netty.Channel) {
+func (c *Client) pipelineInitializer() func(channel netty.Channel) {
 	return func(ch netty.Channel) {
-		// 基于长度字段解码器
-		//ch.Pipeline().AddLast(frame.LengthFieldCodec(binary.BigEndian, 65535, 0, 4, 0, 0))
-		ch.Pipeline().AddLast(newCodecHandler("编解码器", c))
-		ch.Pipeline().AddLast(newBizChannelHandler("业务处理器", c))
-		ch.Pipeline().AddLast(newEventHandler("事件处理器"))
-		ch.Pipeline().AddLast(newExceptionHandler("异常处理器"))
+		ch.Pipeline().AddLast(newCodecHandler("codec-handler", c))
+		ch.Pipeline().AddLast(newBizProcessorHandler("biz-handler", c))
+		ch.Pipeline().AddLast(newEventHandler("evnet-handler"))
+		ch.Pipeline().AddLast(newExceptionHandler("exception-handler"))
 	}
 }
 
-// 连接pushGate
-func (c *Client) connectServer() error {
-	//addr := pushGateAddress{
-	//	IP:   "10.110.240.49",
-	//	Port: 4442,
-	//}
-	//c.pushGateIpList = append(c.pushGateIpList, addr)
+// connect PushGate
+func (c *Client) connectServer(ctx context.Context) error {
+	ctx, cancel := context.WithTimeout(c.ctx, time.Second*5)
+	defer cancel()
 	for _, addr := range c.pushGateIpList {
-		pipeLine := c.pipeLineInitializer()
+		pipeLine := c.pipelineInitializer()
 		bootstrap := netty.NewBootstrap(netty.WithChannel(netty.NewBufferedChannel(128, 1024)),
 			netty.WithClientInitializer(pipeLine), netty.WithTransport(tcp.New()))
 		serverAddress := fmt.Sprintf("tcp://%s:%d", addr.IP, addr.Port)
@@ -40,22 +36,30 @@ func (c *Client) connectServer() error {
 			break
 		}
 	}
-	if c.ch == nil || !c.ch.IsActive() {
-		c.initialListener(errors.New("无法连接远程服务器"))
-		return errors.New("无法连接远程服务器")
+	for {
+		select {
+		case <-ctx.Done():
+			c.initialListener(errors.New("connect to server timeout > 5 secs"))
+			return errors.New("connect to server timeout > 5 secs")
+		default:
+			if c.ch == nil || !c.ch.IsActive() {
+				c.initialListener(errors.New("can't connect to PushGate server , socket channel has nil or  inactive "))
+				return errors.New("can't connect to PushGate server, socket channel has nil or  inactive")
+			}
+			return nil
+		}
 	}
-	return nil
 }
 
 func (c *Client) reConnectServer() {
-	logger.Warnw("重新连接服务器", errors.New("服务器断开连接"))
+	logger.Warnw("reconnecting to PushGate server", errors.New("reason: disconnected"))
 	pushList, err := c.getPushGateIpList()
 	if err != nil {
-		logger.Warnw("无法重新连接服务器", err)
+		logger.Warnw("can't re-connect to PushGate server", err)
 	}
 	c.pushGateIpList = pushList
 	// 连接服务端
-	err = c.connectServer()
+	err = c.connectServer(c.ctx)
 	// 发送ConnAuth
 	if err == nil {
 		c.sendConnAuth()
@@ -88,7 +92,7 @@ func (c *Client) handleConnAuthResp(payload connAuthRespPayload) {
 	} else {
 		// 鉴权不通过
 		c.isSendNotification = false
-		logger.Warnw("长连接鉴权不通过", errors.New(fmt.Sprintf("code:%v , message:%s", payload.statusCode, payload.message)))
+		logger.Warnw("authentication of connection failed", errors.New(fmt.Sprintf("code:%v , message:%s", payload.statusCode, payload.message)))
 		c.initialListener(errors.New(fmt.Sprintf("code:%v , message:%s", payload.statusCode, payload.message)))
 	}
 }
@@ -103,11 +107,11 @@ func (c *Client) startHeartbeatTask() {
 	go func() {
 		for {
 			payload := newHeartBeatPayload()
-			if c.ch == nil || !c.ch.IsActive() {
-				return
+			if c.ch != nil && c.ch.IsActive() && c.isSendNotification {
+				c.ch.Write(payload)
+				time.Sleep(time.Second * 15)
 			}
-			c.ch.Write(payload)
-			time.Sleep(time.Second * 15)
+			break
 		}
 	}()
 

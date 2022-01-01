@@ -12,7 +12,7 @@ type BizProcessorHandler struct {
 	client *Client
 }
 
-func newBizChannelHandler(name string, c *Client) BizProcessorHandler {
+func newBizProcessorHandler(name string, c *Client) BizProcessorHandler {
 	return BizProcessorHandler{
 		name:   name,
 		client: c,
@@ -20,7 +20,7 @@ func newBizChannelHandler(name string, c *Client) BizProcessorHandler {
 }
 
 func (h BizProcessorHandler) HandleActive(ctx netty.ActiveContext) {
-	logger.Infow("连接成功,开始准备通信", "远端服务器地址", ctx.Channel().RemoteAddr())
+	logger.Infow("Connected", "remoteAddr", ctx.Channel().RemoteAddr())
 }
 
 func (h BizProcessorHandler) HandleRead(ctx netty.InboundContext, message netty.Message) {
@@ -35,13 +35,13 @@ func (h BizProcessorHandler) HandleRead(ctx netty.InboundContext, message netty.
 		h.client.handleMessageACK(payload)
 		break
 	default:
-		logger.Warnw("业务处理器", errors.New("无需处理的Payload"), "payload", message)
+		logger.Warnw("bussiness handler:", errors.New("Unknow Payload"), "payload", message)
 		break
 	}
 }
 
 func (h BizProcessorHandler) HandleInactive(ctx netty.InactiveContext, ex netty.Exception) {
-	logger.Warnw("与服务器断开连接", ex)
+	logger.Warnw("disconnect to remote server", ex)
 	// 重新连接
 	h.client.isSendNotification = false
 	h.client.reConnectServer()

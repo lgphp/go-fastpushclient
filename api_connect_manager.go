@@ -51,5 +51,5 @@ func (c *Client) getPushGateIpList() ([]pushGateAddress, error) {
 	} else {
 		PrintHttpResponseError(err, pushListReq)
 	}
-	return nil, errors.New("Request PushGate server failed")
+	return nil, errors.New(fmt.Sprintf("Request PushGate server failed: %s", err))
 }

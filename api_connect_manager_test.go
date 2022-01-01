@@ -1,6 +1,7 @@
 package fastpushclient
 
 import (
+	"github.com/lgphp/go-fastpushclient/logger"
 	"testing"
 )
 
@@ -23,8 +24,10 @@ func TestHttpClient(t *testing.T) {
 	info := NewAppInfo(TEST_ENV_MERCHANT_ID,
 		TEST_ENV_APP_ID,
 		TEST_ENV_APP_KEY)
-	NewFastLivePushHttpClient(info)
-	_, _ = NewFastLivePushClient(info).AddNotificationStatusListener(func(messageId, toUserId, appId string, statusCode uint32, statusText string) {
+	//NewFastLivePushHttpClient(info)
+	_, _ = NewFastLivePushClient(info).AddInitializedListener(func(err error) {
+		logger.Warnw("sss", err)
+	}).AddNotificationStatusListener(func(messageId, toUserId, appId string, statusCode uint32, statusText string) {
 
 	}).BuildConnect()
 }

@@ -18,6 +18,9 @@ func NewFastLivePushHttpClient(info AppInfo) HTTPClient {
 }
 
 func fmtErrors(errs []error) error {
+	if errs == nil {
+		return nil
+	}
 	var errMsg string
 	for _, e := range errs {
 		errMsg += e.Error()

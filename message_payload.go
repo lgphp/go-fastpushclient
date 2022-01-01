@@ -23,17 +23,17 @@ func NewMessageBody(title, body string, attachmentData map[string]string) (Messa
 }
 
 type PushNotification struct {
-	ToUid    string
-	Priority MessagePrior
-	Body     MessageBody
+	ToUid       string
+	Priority    MessagePrior
+	MessageBody MessageBody
 }
 
 // 创建一条push通知
 func NewPushNotification(toUid string, priority MessagePrior, body MessageBody) PushNotification {
 	return PushNotification{
-		ToUid:    toUid,
-		Priority: priority,
-		Body:     body,
+		ToUid:       toUid,
+		Priority:    priority,
+		MessageBody: body,
 	}
 
 }

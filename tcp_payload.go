@@ -245,10 +245,11 @@ func (p *PushMessagePayload) Pack(buf *bytebuf.ByteBuf, client *Client) {
 	// 写类型码
 	_ = buf.WriteUInt16BE(p.payloadCode)
 	// 写messageID
-	messageIdBytes := []byte(fastuuid.MustNewGenerator().Hex128())
+	messageIdBytes := []byte(p.messageID)
 	messageIdLen := byte(len(messageIdBytes))
 	_ = buf.WriteByte(messageIdLen)
 	_ = buf.WriteBytes(messageIdBytes)
+
 	// 写通知分类
 	_ = buf.WriteByte(p.classifier)
 
@@ -277,7 +278,6 @@ func (p *PushMessagePayload) Pack(buf *bytebuf.ByteBuf, client *Client) {
 	_ = buf.WriteByte(encFlag)
 	// 写优先级
 	_ = buf.WriteByte(p.priority)
-
 	// 写toUserID
 	toUserIdBytes := []byte(p.toUid)
 	toUserIdLen := byte(len(toUserIdBytes))
@@ -297,7 +297,7 @@ func (p *PushMessagePayload) Unpack(buf *bytebuf.ByteBuf, _ *Client) {
 // 创建一个新push通知
 func NewPushMessagePayloadFromPushNotification(n PushNotification, classifier NotificationClassify, app *AppInfo) PushMessagePayload {
 	messageId := fastuuid.MustNewGenerator().Hex128()
-	messageBody, _ := json.Marshal(n.Body)
+	messageBody, _ := json.Marshal(n.MessageBody)
 	return PushMessagePayload{
 		payloadCode: PushMessageCode,
 		messageID:   messageId,
@@ -349,7 +349,7 @@ func (c *messageAckPayload) Unpack(buf *bytebuf.ByteBuf, _ *Client) {
 	code, _ := buf.ReadUInt32BE()
 	c.statusCode = code
 
-	statusMsgLen, _ := buf.ReadByte()
+	statusMsgLen, _ := buf.ReadUInt32BE()
 	statusMsg := make([]byte, statusMsgLen)
 	_, _ = buf.ReadBytes(statusMsg)
 	c.statusMessage = string(statusMsg)

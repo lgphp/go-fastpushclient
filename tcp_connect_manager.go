@@ -2,9 +2,11 @@ package fastpushclient
 
 import (
 	"context"
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"github.com/go-netty/go-netty"
+	"github.com/go-netty/go-netty/codec/frame"
 	"github.com/go-netty/go-netty/transport/tcp"
 	"github.com/lgphp/go-fastpushclient/logger"
 	"time"
@@ -12,6 +14,13 @@ import (
 
 func (c *Client) pipelineInitializer() func(channel netty.Channel) {
 	return func(ch netty.Channel) {
+		// 基于长度字段解码器 ， 解决粘包和半包问题
+		ch.Pipeline().AddLast(frame.LengthFieldCodec(binary.BigEndian,
+			65535,
+			0,
+			4,
+			0,
+			4))
 		ch.Pipeline().AddLast(newCodecHandler("codec-handler", c))
 		ch.Pipeline().AddLast(newBizProcessorHandler("biz-handler", c))
 		ch.Pipeline().AddLast(newEventHandler("evnet-handler"))

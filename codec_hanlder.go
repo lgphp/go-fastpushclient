@@ -3,10 +3,10 @@ package fastpushclient
 import (
 	"github.com/go-netty/go-netty"
 	"github.com/go-netty/go-netty/codec"
-	"github.com/go-netty/go-netty/utils"
 	"github.com/lgphp/go-fastpushclient/bytebuf"
 	"github.com/lgphp/go-fastpushclient/logger"
 	"github.com/pkg/errors"
+	"io"
 )
 
 type CodecHandler struct {
@@ -31,7 +31,7 @@ func (h CodecHandler) CodecName() string {
 
 // 解码
 func (h CodecHandler) HandleRead(ctx netty.InboundContext, message netty.Message) {
-	reader := utils.MustToReader(message)
+	reader := message.(io.Reader)
 	n, _ := reader.Read(h.buffer)
 	buf, _ := bytebuf.NewByteBuf(h.buffer[:n])
 	defer func() {
@@ -41,10 +41,12 @@ func (h CodecHandler) HandleRead(ctx netty.InboundContext, message netty.Message
 		return
 	}
 	// 读取包体长度
-	pktLen, _ := buf.ReadUInt32BE()
-	if pktLen > MAX_TCP_PACkET_LENGTH-4 {
+	if len(buf.AvailableBytes()) > MAX_TCP_PACkET_LENGTH-4 {
 		return
 	}
+	// frame.LengthFieldCodec initialBytesToStrip 填写4。
+	// 表示传到下一个解码器跳过4字节长度，所以这里就不需要读取包体长度了
+	//pktLen, _ := buf.ReadUInt32BE()
 	// 读取版本号
 	_, _ = buf.ReadByte()
 	// 读取payloadCode

@@ -7,12 +7,12 @@ type EventHandler struct {
 	name string
 }
 
-func newEventHandler(name string) EventHandler {
-	return EventHandler{
+func newEventHandler(name string) *EventHandler {
+	return &EventHandler{
 		name: name,
 	}
 }
 
-func (h EventHandler) HandleEvent(ctx netty.EventContext, event netty.Event) {
+func (h *EventHandler) HandleEvent(ctx netty.EventContext, event netty.Event) {
 
 }

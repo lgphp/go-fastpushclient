@@ -12,18 +12,18 @@ type BizProcessorHandler struct {
 	client *Client
 }
 
-func newBizProcessorHandler(name string, c *Client) BizProcessorHandler {
-	return BizProcessorHandler{
+func newBizProcessorHandler(name string, c *Client) *BizProcessorHandler {
+	return &BizProcessorHandler{
 		name:   name,
 		client: c,
 	}
 }
 
-func (h BizProcessorHandler) HandleActive(ctx netty.ActiveContext) {
+func (h *BizProcessorHandler) HandleActive(ctx netty.ActiveContext) {
 	logger.Infow("Connected", "remoteAddr", ctx.Channel().RemoteAddr())
 }
 
-func (h BizProcessorHandler) HandleRead(ctx netty.InboundContext, message netty.Message) {
+func (h *BizProcessorHandler) HandleRead(ctx netty.InboundContext, message netty.Message) {
 	switch message.(type) {
 	case connAuthRespPayload:
 		if payload, ok := message.(connAuthRespPayload); ok {
@@ -40,7 +40,7 @@ func (h BizProcessorHandler) HandleRead(ctx netty.InboundContext, message netty.
 	}
 }
 
-func (h BizProcessorHandler) HandleInactive(ctx netty.InactiveContext, ex netty.Exception) {
+func (h *BizProcessorHandler) HandleInactive(ctx netty.InactiveContext, ex netty.Exception) {
 	logger.Warnw("disconnect to remote server", ex)
 	// 重新连接
 	h.client.isSendNotification = false

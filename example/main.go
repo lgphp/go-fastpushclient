@@ -44,11 +44,9 @@ func sendNotification(client *pushSDK.Client) {
 	// 发送100条消息
 	for i := 1; i <= 100; i++ {
 		body, _ := pushSDK.NewMessageBody(fmt.Sprintf("%s+:%v", "标题", i), "消息体", nil)
-
 		notification := pushSDK.NewPushNotification(TEST_ENV_USER_ID, pushSDK.LOW, body)
 		client.SendPushNotification(notification)
-
-		time.Sleep(time.Millisecond * 3)
+		time.Sleep(time.Microsecond * 100)
 	}
 
 }
@@ -69,9 +67,9 @@ func notificationCallBack(messageId, toUserId, appId string, statusCode uint32, 
 
 // 发送消息回调
 func sendCallBack(messageId string, err error) {
-	if err != nil {
-		logger.Warnw("发送失败:", err, "messageId", messageId)
-	} else {
-		logger.Infow("发送成功", "messageId", messageId)
-	}
+	//if err != nil {
+	//	logger.Warnw("发送失败:", err, "messageId", messageId)
+	//} else {
+	//	logger.Infow("发送成功", "messageId", messageId)
+	//}
 }

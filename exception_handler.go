@@ -10,12 +10,12 @@ type ExceptionHandler struct {
 	name string
 }
 
-func newExceptionHandler(name string) ExceptionHandler {
-	return ExceptionHandler{
+func newExceptionHandler(name string) *ExceptionHandler {
+	return &ExceptionHandler{
 		name: name,
 	}
 }
 
-func (h ExceptionHandler) HandleException(ctx netty.ExceptionContext, ex netty.Exception) {
+func (h *ExceptionHandler) HandleException(ctx netty.ExceptionContext, ex netty.Exception) {
 	logger.Warnw("exception handler:", ex)
 }

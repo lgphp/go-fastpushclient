@@ -106,8 +106,8 @@ func (c *TokenUploadPayload) Pack(buf *bytebuf.ByteBuf, clinet *Client) {
 	// 写classfier
 	_ = buf.WriteByte(c.classifier)
 
-	//pktLen := buf.WriterIndex() - 4
-	//_ = buf.PutUInt32BE(0, uint32(pktLen))
+	pktLen := buf.WriterIndex() - 4
+	_ = buf.PutUInt32BE(0, uint32(pktLen))
 }
 
 func (c *TokenUploadPayload) Unpack(buf *bytebuf.ByteBuf, _ *Client) {
@@ -129,14 +129,14 @@ func newHeartBeatPayload() heartBeatPayload {
 // 心跳
 func (c *heartBeatPayload) Pack(buf *bytebuf.ByteBuf, _ *Client) {
 	// 写包长度占位 , frame.LengthFieldCodec 编码器自动添加，所以不要写
-	//_ = buf.WriteUInt32BE(0)
+	_ = buf.WriteUInt32BE(0)
 	// 写版本号
 	_ = buf.WriteByte(1)
 	// 写类型码
 	_ = buf.WriteUInt16BE(c.payloadCode)
 	_ = buf.WriteByte(c.zero)
-	//pktLen := buf.WriterIndex() - 4
-	//_ = buf.PutUInt32BE(0, uint32(pktLen))
+	pktLen := buf.WriterIndex() - 4
+	_ = buf.PutUInt32BE(0, uint32(pktLen))
 }
 
 // 无需解码
@@ -155,7 +155,7 @@ type connAuthPayload struct {
 
 func (c *connAuthPayload) Pack(buf *bytebuf.ByteBuf, _ *Client) {
 	// 写包长度占位 , frame.LengthFieldCodec 编码器自动添加，所以不要写
-	//_ = buf.WriteUInt32BE(0)
+	_ = buf.WriteUInt32BE(0)
 	// 写版本号
 	_ = buf.WriteByte(1)
 	// 写类型码
@@ -181,8 +181,8 @@ func (c *connAuthPayload) Pack(buf *bytebuf.ByteBuf, _ *Client) {
 
 	//写AuthKey
 	_ = buf.WriteBytes(c.authKey)
-	//pktLen := buf.WriterIndex() - 4
-	//_ = buf.PutUInt32BE(0, uint32(pktLen))
+	pktLen := buf.WriterIndex() - 4
+	_ = buf.PutUInt32BE(0, uint32(pktLen))
 
 }
 
@@ -245,7 +245,7 @@ type PushMessagePayload struct {
 
 func (p *PushMessagePayload) Pack(buf *bytebuf.ByteBuf, client *Client) {
 	// 写包长度占位 , frame.LengthFieldCodec 编码器自动添加，所以不要写
-	//_ = buf.WriteUInt32BE(0)
+	_ = buf.WriteUInt32BE(0)
 	// 写版本号
 	_ = buf.WriteByte(1)
 	// 写类型码
@@ -291,8 +291,8 @@ func (p *PushMessagePayload) Pack(buf *bytebuf.ByteBuf, client *Client) {
 	_ = buf.WriteBytes(toUserIdBytes)
 	// 写MessageBody
 	_ = buf.WriteBytes(messageBody)
-	//pktLen := buf.WriterIndex() - 4
-	//_ = buf.PutUInt32BE(0, uint32(pktLen))
+	pktLen := buf.WriterIndex() - 4
+	_ = buf.PutUInt32BE(0, uint32(pktLen))
 
 }
 
@@ -357,6 +357,7 @@ func (c *messageAckPayload) Unpack(buf *bytebuf.ByteBuf, _ *Client) {
 
 	statusMsgLen, _ := buf.ReadUInt32BE()
 	statusMsg := make([]byte, statusMsgLen)
+
 	_, _ = buf.ReadBytes(statusMsg)
 	c.statusMessage = string(statusMsg)
 

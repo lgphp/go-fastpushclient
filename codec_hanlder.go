@@ -3,6 +3,7 @@ package fastpushclient
 import (
 	"github.com/go-netty/go-netty"
 	"github.com/go-netty/go-netty/codec"
+	"github.com/go-netty/go-netty/utils"
 	"github.com/lgphp/go-fastpushclient/bytebuf"
 	"github.com/lgphp/go-fastpushclient/logger"
 	"github.com/pkg/errors"
@@ -13,64 +14,95 @@ type CodecHandler struct {
 	name           string
 	c              *Client
 	maxFrameLength int
-	buffer         []byte
+	allbuf         []byte
 }
 
-func newCodecHandler(name string, client *Client) codec.Codec {
+func newCodecHandler(name string, maxFrameLength int, client *Client) codec.Codec {
 	return &CodecHandler{
 		name:           name,
 		c:              client,
-		maxFrameLength: 1024,
-		buffer:         make([]byte, 1024),
+		maxFrameLength: maxFrameLength,
+		allbuf:         make([]byte, 0),
 	}
 }
 
-func (h CodecHandler) CodecName() string {
+func (h *CodecHandler) CodecName() string {
 	return h.name
 }
 
 // 解码
-func (h CodecHandler) HandleRead(ctx netty.InboundContext, message netty.Message) {
-	reader := message.(io.Reader)
-	n, _ := reader.Read(h.buffer)
-	buf, _ := bytebuf.NewByteBuf(h.buffer[:n])
-	defer func() {
-		buf.Release()
-	}()
-	if len(buf.AvailableBytes()) < MIN_TCP_PACkET_LENGTH {
+func (h *CodecHandler) HandleRead(ctx netty.InboundContext, message netty.Message) {
+
+	buffer := make([]byte, h.maxFrameLength)
+	reader := utils.MustToReader(message)
+	n, err := reader.Read(buffer)
+
+	if err != nil && err != io.EOF {
+		return
+	}
+
+	if n < MIN_TCP_PACkET_LENGTH {
 		return
 	}
 	// 读取包体长度
-	if len(buf.AvailableBytes()) > MAX_TCP_PACkET_LENGTH-4 {
+	if n > MAX_TCP_PACkET_LENGTH-4 {
 		return
 	}
-	// frame.LengthFieldCodec initialBytesToStrip 填写4。
-	// 表示传到下一个解码器跳过4字节长度，所以这里就不需要读取包体长度了
-	//pktLen, _ := buf.ReadUInt32BE()
-	// 读取版本号
-	_, _ = buf.ReadByte()
-	// 读取payloadCode
-	payloadCode, _ := buf.ReadUInt16BE()
-	switch payloadCode {
-	case ConnAuthRespCode:
-		carp := newConnAuthRespPayload()
-		carp.Unpack(buf, h.c)
-		ctx.HandleRead(carp)
-		break
-	case PushMessageACKCode:
-		amap := newAckMessageAckPayload()
-		amap.Unpack(buf, h.c)
-		ctx.HandleRead(amap)
-		break
-	default:
-		logger.Warnw("decoder", errors.New("unknow PayloadCode"),
-			"payloadCode", payloadCode)
-		break
+
+	//  handle  half packet and stick packet
+	//  very important to socket communication
+	//
+	if len(h.allbuf) != 0 {
+		h.allbuf = append(h.allbuf, buffer[:n]...)
+	} else {
+		h.allbuf = buffer[:n]
 	}
+	buf, _ := bytebuf.NewByteBuf(h.allbuf[:])
+	defer func() {
+		buf.Release()
+	}()
+	for {
+		// if readablebytes  < length field length
+		if buf.ReadableBytes() < 4 {
+			break
+		}
+		pktLen, _ := buf.ReadUInt32BE()
+		// if readablebytes <  packet Length
+		if buf.ReadableBytes() < int(pktLen) {
+			break
+		}
+		// 读取版本号
+		_, _ = buf.ReadByte()
+		// 读取payloadCode
+		payloadCode, _ := buf.ReadUInt16BE()
+		switch payloadCode {
+		case ConnAuthRespCode:
+			carp := newConnAuthRespPayload()
+			carp.Unpack(buf, h.c)
+			ctx.HandleRead(carp)
+			break
+		case PushMessageACKCode:
+			amap := newAckMessageAckPayload()
+			amap.Unpack(buf, h.c)
+			ctx.HandleRead(amap)
+			break
+		default:
+			logger.Warnw("decoder", errors.New("unknow PayloadCode"),
+				"payloadCode", payloadCode)
+			break
+		}
+		// just read complete
+		if buf.ReaderIndex() == buf.WriterIndex() {
+			// make allbuf = []
+			h.allbuf = make([]byte, 0)
+			break
+		}
+	}
+
 }
 
 // 编码
-func (h CodecHandler) HandleWrite(ctx netty.OutboundContext, message netty.Message) {
+func (h *CodecHandler) HandleWrite(ctx netty.OutboundContext, message netty.Message) {
 	buf, _ := bytebuf.NewByteBuf()
 	defer func() {
 		buf.Release()

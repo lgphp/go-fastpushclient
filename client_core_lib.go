@@ -7,9 +7,9 @@ import (
 )
 
 func NewFastLivePushClient(appInfo AppInfo) *Client {
-	logger.Infow("Initial pushClient")
+	logger.Infow("Initial PushClient")
 	client := buildClient()
-	client.setappinfo(appInfo)
+	client.setAppinfo(appInfo)
 	client.httpClient = NewFastLivePushHttpClient(appInfo)
 	return client
 }

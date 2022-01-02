@@ -39,7 +39,7 @@ func buildClient() *Client {
 	}
 }
 
-func (c *Client) setappinfo(appInfo AppInfo) {
+func (c *Client) setAppinfo(appInfo AppInfo) {
 	c.appInfo = appInfo
 }
 

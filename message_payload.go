@@ -3,9 +3,9 @@ package fastpushclient
 import "fmt"
 
 type MessageBody struct {
-	Title string            `json:"title"`
-	Body  string            `json:"body"`
-	Data  map[string]string `json:"data"`
+	title string
+	body  string
+	data  map[string]string
 }
 
 func NewMessageBody(title, body string, attachmentData map[string]string) (MessageBody, error) {
@@ -16,24 +16,24 @@ func NewMessageBody(title, body string, attachmentData map[string]string) (Messa
 		return MessageBody{}, fmt.Errorf("body must be specified")
 	}
 	return MessageBody{
-		Title: title,
-		Body:  body,
-		Data:  attachmentData,
+		title: title,
+		body:  body,
+		data:  attachmentData,
 	}, nil
 }
 
 type PushNotification struct {
-	ToUid       string
-	Priority    MessagePrior
-	MessageBody MessageBody
+	toUid       string
+	priority    MessagePrior
+	messageBody MessageBody
 }
 
 // 创建一条push通知
 func NewPushNotification(toUid string, priority MessagePrior, body MessageBody) PushNotification {
 	return PushNotification{
-		ToUid:       toUid,
-		Priority:    priority,
-		MessageBody: body,
+		toUid:       toUid,
+		priority:    priority,
+		messageBody: body,
 	}
 
 }

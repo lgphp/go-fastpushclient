@@ -303,15 +303,15 @@ func (p *PushMessagePayload) Unpack(buf *bytebuf.ByteBuf, _ *Client) {
 // 创建一个新push通知
 func NewPushMessagePayloadFromPushNotification(n PushNotification, classifier NotificationClassify, app *AppInfo) PushMessagePayload {
 	messageId := fastuuid.MustNewGenerator().Hex128()
-	messageBody, _ := json.Marshal(n.MessageBody)
+	messageBody, _ := json.Marshal(n.messageBody)
 	return PushMessagePayload{
 		payloadCode: PushMessageCode,
 		messageID:   messageId,
 		classifier:  classifier,
 		merchantID:  app.GetMerchantID(),
 		appID:       app.GetAppID(),
-		priority:    n.Priority,
-		toUid:       n.ToUid,
+		priority:    n.priority,
+		toUid:       n.toUid,
 		messageBody: messageBody,
 	}
 }

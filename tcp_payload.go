@@ -162,25 +162,17 @@ func (c *connAuthPayload) Pack(buf *bytebuf.ByteBuf, _ *Client) {
 	_ = buf.WriteUInt16BE(c.payloadCode)
 
 	// 写ClientID
-	clientIdBytes := []byte(c.clientId)
-	clientIdLen := byte(len(clientIdBytes))
-	_ = buf.WriteByte(clientIdLen)
-	_ = buf.WriteBytes(clientIdBytes)
+	_ = buf.WriteStringWithByteLength(c.clientId)
 
 	// 写merchantID
-	merchantIdBytes := []byte(c.merchantID)
-	merchantIdLen := byte(len(merchantIdBytes))
-	_ = buf.WriteByte(merchantIdLen)
-	_ = buf.WriteBytes(merchantIdBytes)
+	_ = buf.WriteStringWithByteLength(c.merchantID)
 
 	//写appID
-	appIdBytes := []byte(c.appID)
-	appIdLen := byte(len(appIdBytes))
-	_ = buf.WriteByte(appIdLen)
-	_ = buf.WriteBytes(appIdBytes)
+	_ = buf.WriteStringWithByteLength(c.appID)
 
 	//写AuthKey
 	_ = buf.WriteBytes(c.authKey)
+
 	pktLen := buf.WriterIndex() - 4
 	_ = buf.PutUInt32BE(0, uint32(pktLen))
 
@@ -220,13 +212,8 @@ func (c *connAuthRespPayload) Pack(buf *bytebuf.ByteBuf, _ *Client) {
 }
 
 func (c *connAuthRespPayload) Unpack(buf *bytebuf.ByteBuf, _ *Client) {
-	// 读取相关
-	code, _ := buf.ReadUInt32BE()
-	c.statusCode = code
-	messageLen, _ := buf.ReadUInt32BE()
-	msg := make([]byte, messageLen)
-	_, _ = buf.ReadBytes(msg)
-	c.message = string(msg)
+	c.statusCode, _ = buf.ReadUInt32BE()
+	c.message = buf.ReadStringWithU32Length()
 	stime, _ := buf.ReadUInt64BE()
 	c.serverTime = stime
 }
@@ -244,7 +231,7 @@ type PushMessagePayload struct {
 }
 
 func (p *PushMessagePayload) Pack(buf *bytebuf.ByteBuf, client *Client) {
-	// 写包长度占位 , frame.LengthFieldCodec 编码器自动添加，所以不要写
+	// 写包长度占位
 	_ = buf.WriteUInt32BE(0)
 	// 写版本号
 	_ = buf.WriteByte(1)
@@ -324,12 +311,10 @@ func (c *messageAckPayload) Pack(buf *bytebuf.ByteBuf, _ *Client) {
 }
 
 func (c *messageAckPayload) Unpack(buf *bytebuf.ByteBuf, _ *Client) {
-	// 读取相关
 
 	c.messageID = buf.ReadStringWithByteLength()
 	c.appId = buf.ReadStringWithByteLength()
 	c.userId = buf.ReadStringWithByteLength()
-
 	code, _ := buf.ReadUInt32BE()
 	c.statusCode = code
 

@@ -64,12 +64,12 @@ func (h *CodecHandler) HandleRead(ctx netty.InboundContext, message netty.Messag
 	for {
 		// if readablebytes  < length field length
 		if buf.ReadableBytes() < 4 {
-			break
+			return
 		}
 		pktLen, _ := buf.ReadUInt32BE()
 		// if readablebytes <  packet Length
 		if buf.ReadableBytes() < int(pktLen) {
-			break
+			return
 		}
 		// 读取版本号
 		_, _ = buf.ReadByte()
@@ -95,7 +95,7 @@ func (h *CodecHandler) HandleRead(ctx netty.InboundContext, message netty.Messag
 		if buf.ReaderIndex() == buf.WriterIndex() {
 			// make allbuf = []
 			h.allbuf = make([]byte, 0)
-			break
+			return
 		}
 	}
 

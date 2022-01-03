@@ -12,7 +12,7 @@ import (
 
 func (c *Client) pipelineInitializer() func(channel netty.Channel) {
 	return func(ch netty.Channel) {
-		ch.Pipeline().AddLast(newCodecHandler("codec-handler", 1024, c))
+		ch.Pipeline().AddLast(newCodecHandler("codec-handler", 4096, c))
 		ch.Pipeline().AddLast(newBizProcessorHandler("biz-handler", c))
 		ch.Pipeline().AddLast(newEventHandler("evnet-handler"))
 		ch.Pipeline().AddLast(newExceptionHandler("exception-handler"))

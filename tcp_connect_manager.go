@@ -25,7 +25,7 @@ func (c *Client) connectServer(ctx context.Context) error {
 	defer cancel()
 	for _, addr := range c.pushGateIpList {
 		pipeLine := c.pipelineInitializer()
-		bootstrap := netty.NewBootstrap(netty.WithChannel(netty.NewBufferedChannel(128, 1024)),
+		bootstrap := netty.NewBootstrap(netty.WithChannel(netty.NewBufferedChannel(1, 4096)),
 			netty.WithClientInitializer(pipeLine), netty.WithTransport(tcp.New()))
 		serverAddress := fmt.Sprintf("tcp://%s:%d", addr.IP, addr.Port)
 		channel, err := bootstrap.Connect(serverAddress, "FastLivePushClient")

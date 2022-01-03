@@ -3,9 +3,9 @@ package fastpushclient
 import "fmt"
 
 type MessageBody struct {
-	title string
-	body  string
-	data  map[string]string
+	Title string            `json:"title,omitempty"`
+	Body  string            `json:"body,omitempty"`
+	Data  map[string]string `json:"data,omitempty"`
 }
 
 func NewMessageBody(title, body string, attachmentData map[string]string) (MessageBody, error) {
@@ -16,9 +16,9 @@ func NewMessageBody(title, body string, attachmentData map[string]string) (Messa
 		return MessageBody{}, fmt.Errorf("body must be specified")
 	}
 	return MessageBody{
-		title: title,
-		body:  body,
-		data:  attachmentData,
+		Title: title,
+		Body:  body,
+		Data:  attachmentData,
 	}, nil
 }
 

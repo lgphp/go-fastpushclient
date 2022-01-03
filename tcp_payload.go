@@ -251,25 +251,15 @@ func (p *PushMessagePayload) Pack(buf *bytebuf.ByteBuf, client *Client) {
 	// 写类型码
 	_ = buf.WriteUInt16BE(p.payloadCode)
 	// 写messageID
-	messageIdBytes := []byte(p.messageID)
-	messageIdLen := byte(len(messageIdBytes))
-	_ = buf.WriteByte(messageIdLen)
-	_ = buf.WriteBytes(messageIdBytes)
+	_ = buf.WriteStringWithByteLength(p.messageID)
 
 	// 写通知分类
 	_ = buf.WriteByte(p.classifier)
-
 	// 写merchantID
-	merchantIdBytes := []byte(p.merchantID)
-	merchantIdLen := byte(len(merchantIdBytes))
-	_ = buf.WriteByte(merchantIdLen)
-	_ = buf.WriteBytes(merchantIdBytes)
-
+	_ = buf.WriteStringWithByteLength(p.merchantID)
 	//写appID
-	appIdBytes := []byte(p.appID)
-	appIdLen := byte(len(appIdBytes))
-	_ = buf.WriteByte(appIdLen)
-	_ = buf.WriteBytes(appIdBytes)
+	_ = buf.WriteStringWithByteLength(p.appID)
+
 	var encFlag byte = 2
 	// 加密消息,获取消息加密key CBC 模式
 	encMessageKey := utils.GetMsgEncKey(client.appInfo.GetAppKey())
@@ -285,10 +275,8 @@ func (p *PushMessagePayload) Pack(buf *bytebuf.ByteBuf, client *Client) {
 	// 写优先级
 	_ = buf.WriteByte(p.priority)
 	// 写toUserID
-	toUserIdBytes := []byte(p.toUid)
-	toUserIdLen := byte(len(toUserIdBytes))
-	_ = buf.WriteByte(toUserIdLen)
-	_ = buf.WriteBytes(toUserIdBytes)
+	_ = buf.WriteStringWithByteLength(p.toUid)
+
 	// 写MessageBody
 	_ = buf.WriteBytes(messageBody)
 	pktLen := buf.WriterIndex() - 4
@@ -337,28 +325,14 @@ func (c *messageAckPayload) Pack(buf *bytebuf.ByteBuf, _ *Client) {
 
 func (c *messageAckPayload) Unpack(buf *bytebuf.ByteBuf, _ *Client) {
 	// 读取相关
-	messageIdLen, _ := buf.ReadByte()
-	msgId := make([]byte, messageIdLen)
-	_, _ = buf.ReadBytes(msgId)
-	c.messageID = string(msgId)
 
-	appIdIdLen, _ := buf.ReadByte()
-	appId := make([]byte, appIdIdLen)
-	_, _ = buf.ReadBytes(appId)
-	c.appId = string(appId)
-
-	userIdLen, _ := buf.ReadByte()
-	userId := make([]byte, userIdLen)
-	_, _ = buf.ReadBytes(userId)
-	c.userId = string(userId)
+	c.messageID = buf.ReadStringWithByteLength()
+	c.appId = buf.ReadStringWithByteLength()
+	c.userId = buf.ReadStringWithByteLength()
 
 	code, _ := buf.ReadUInt32BE()
 	c.statusCode = code
 
-	statusMsgLen, _ := buf.ReadUInt32BE()
-	statusMsg := make([]byte, statusMsgLen)
-
-	_, _ = buf.ReadBytes(statusMsg)
-	c.statusMessage = string(statusMsg)
+	c.statusMessage = buf.ReadStringWithU32Length()
 
 }

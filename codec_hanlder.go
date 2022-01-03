@@ -32,11 +32,9 @@ func (h *CodecHandler) CodecName() string {
 
 // 解码
 func (h *CodecHandler) HandleRead(ctx netty.InboundContext, message netty.Message) {
-
 	buffer := make([]byte, h.maxFrameLength)
 	reader := utils.MustToReader(message)
 	n, err := reader.Read(buffer)
-
 	if err != nil && err != io.EOF {
 		return
 	}
@@ -48,16 +46,17 @@ func (h *CodecHandler) HandleRead(ctx netty.InboundContext, message netty.Messag
 	if n > MAX_TCP_PACkET_LENGTH-4 {
 		return
 	}
-
 	//  handle  half packet and stick packet
 	//  very important for socket communication
 	//
+
 	if len(h.allbuf) != 0 {
 		h.allbuf = append(h.allbuf, buffer[:n]...)
 	} else {
 		h.allbuf = buffer[:n]
 	}
 	buf, _ := bytebuf.NewByteBuf(h.allbuf[:])
+	//println("读到：n" , n , "buffer" , len(buffer) , "h.allbuf" , len(h.allbuf))
 	defer func() {
 		buf.Release()
 	}()
@@ -89,6 +88,7 @@ func (h *CodecHandler) HandleRead(ctx netty.InboundContext, message netty.Messag
 		default:
 			logger.Warnw("decoder", errors.New("unknow PayloadCode"),
 				"payloadCode", payloadCode)
+			buf.SkipBytes(int(pktLen - 3))
 			break
 		}
 		// just read complete

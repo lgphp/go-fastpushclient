@@ -4,6 +4,7 @@ import (
 	"fmt"
 	pushSDK "github.com/lgphp/go-fastpushclient"
 	"github.com/lgphp/go-fastpushclient/logger"
+	"go.uber.org/atomic"
 	"sync"
 	"time"
 )
@@ -14,7 +15,7 @@ func init() {
 
 var (
 	ch = make(chan bool)
-	c  = 0
+	c  = atomic.NewInt64(0)
 	// 测试环境的相关配置
 	TEST_ENV_MERCHANT_ID = "a127297f117c4a3fb095a15443bc96fc"
 	TEST_ENV_APP_ID      = "b4722bb12f30485582fb3e3a5c6157c6"
@@ -42,11 +43,11 @@ func main() {
 
 func sendNotification(client *pushSDK.Client) {
 	// 发送100条消息
-	for i := 1; i <= 20; i++ {
+	for i := 1; i <= 2000; i++ {
 		body, _ := pushSDK.NewMessageBody(fmt.Sprintf("%s+:%v", "标题", i), "消息体", nil)
 		notification := pushSDK.NewPushNotification(TEST_ENV_USER_ID, pushSDK.LOW, body)
 		client.SendPushNotification(notification)
-		time.Sleep(time.Microsecond * 1)
+		time.Sleep(time.Millisecond * 1)
 	}
 
 }
@@ -64,8 +65,8 @@ func initialSDKCallback(err error) {
 func notificationCallBack(messageId, toUserId, appId string, statusCode uint32, statusText string) {
 	logger.Infow("投递结果", "messageId", messageId, "toUserId", toUserId, "statusText", statusText)
 	if statusCode == 1 {
-		c = c + 1
-		println("第", c, "条回执")
+		c.Add(1)
+		println("第", c.Load(), "条回执")
 	}
 }
 

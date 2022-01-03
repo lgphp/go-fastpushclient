@@ -1,6 +1,6 @@
 package utils
 
-import "github.com/lgphp/go-fastpushclient/bytebuf"
+import "github.com/lgphp/go-bytebuf"
 
 // authKey
 func GetAuthKey(appKey []byte) []byte {

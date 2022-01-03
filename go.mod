@@ -11,6 +11,7 @@ require (
 	github.com/go-logr/zapr v1.2.2
 	github.com/go-netty/go-netty v0.0.0-20210318115346-68000ac9a2c6
 	github.com/gorilla/websocket v1.4.2 // indirect
+	github.com/lgphp/go-bytebuf v1.0.0
 	github.com/lithammer/shortuuid/v3 v3.0.7 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/parnurzeal/gorequest v0.2.16
@@ -24,4 +25,3 @@ require (
 	go.uber.org/zap v1.19.1
 	moul.io/http2curl v1.0.0 // indirect
 )
-

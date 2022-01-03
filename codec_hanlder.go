@@ -4,7 +4,7 @@ import (
 	"github.com/go-netty/go-netty"
 	"github.com/go-netty/go-netty/codec"
 	"github.com/go-netty/go-netty/utils"
-	"github.com/lgphp/go-fastpushclient/bytebuf"
+	"github.com/lgphp/go-bytebuf"
 	"github.com/lgphp/go-fastpushclient/logger"
 	"github.com/pkg/errors"
 	"io"
@@ -50,7 +50,7 @@ func (h *CodecHandler) HandleRead(ctx netty.InboundContext, message netty.Messag
 	}
 
 	//  handle  half packet and stick packet
-	//  very important to socket communication
+	//  very important for socket communication
 	//
 	if len(h.allbuf) != 0 {
 		h.allbuf = append(h.allbuf, buffer[:n]...)

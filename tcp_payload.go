@@ -2,7 +2,7 @@ package fastpushclient
 
 import (
 	"encoding/json"
-	"github.com/lgphp/go-fastpushclient/bytebuf"
+	"github.com/lgphp/go-bytebuf"
 	"github.com/lgphp/go-fastpushclient/logger"
 	"github.com/lgphp/go-fastpushclient/utils"
 	"github.com/rogpeppe/fastuuid"

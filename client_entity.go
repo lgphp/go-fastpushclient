@@ -3,6 +3,7 @@ package fastpushclient
 import (
 	"context"
 	"encoding/base64"
+	"github.com/gammazero/workerpool"
 	"github.com/go-netty/go-netty"
 	"github.com/rogpeppe/fastuuid"
 	"sync"
@@ -28,6 +29,9 @@ type Client struct {
 	timeDiff   int64
 	httpClient HTTPClient
 	ctx        context.Context
+	sendQueue  chan PushMessagePayload
+	workerpool *workerpool.WorkerPool
+	sendSpeed  uint16
 }
 
 func buildClient() *Client {
@@ -36,6 +40,9 @@ func buildClient() *Client {
 		clientId:       fastuuid.MustNewGenerator().Hex128(),
 		pushGateIpList: make([]pushGateAddress, 0),
 		ctx:            context.Background(),
+		sendQueue:      make(chan PushMessagePayload, 1000), // 100个队列
+		workerpool:     workerpool.New(10),
+		sendSpeed:      uint16(30),
 	}
 }
 

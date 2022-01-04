@@ -85,10 +85,15 @@ func (c *Client) handleConnAuthResp(payload connAuthRespPayload) {
 		stime := payload.serverTime
 		ctime := time.Now().UnixNano() / 1e6
 		c.timeDiff = int64(stime) - ctime
-		c.initialListener(nil)
 		c.isSendNotification = true
-		// 成功 ==> 发送心跳
-		c.startHeartbeatTask()
+		//设置发送速度
+		c.sendSpeed = payload.speedLimit
+		logger.Infow(fmt.Sprintf("Connect Authentication Success , Send Speed Limited : %d /sec", c.sendSpeed))
+		// 发送心跳
+		go c.startHeartbeatTask()
+		// 启动发送任务
+		go c.sendTask()
+		c.initialListener(nil)
 	} else {
 		// 鉴权不通过
 		c.isSendNotification = false
@@ -104,17 +109,14 @@ func (c *Client) handleMessageACK(payload messageAckPayload) {
 
 // 发送心跳
 func (c *Client) startHeartbeatTask() {
-	go func() {
-		for {
-			payload := newHeartBeatPayload()
-			if c.ch != nil && c.ch.IsActive() && c.isSendNotification {
-				c.ch.Write(payload)
-				time.Sleep(time.Second * 15)
-			} else {
-				return
-			}
-
+	for {
+		payload := newHeartBeatPayload()
+		if c.ch != nil && c.ch.IsActive() && c.isSendNotification {
+			c.ch.Write(payload)
+			time.Sleep(time.Second * 15)
+		} else {
+			return
 		}
-	}()
 
+	}
 }

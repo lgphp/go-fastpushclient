@@ -199,6 +199,7 @@ type connAuthRespPayload struct {
 	statusCode  uint32
 	message     string
 	serverTime  uint64
+	speedLimit  uint16
 }
 
 func newConnAuthRespPayload() connAuthRespPayload {
@@ -214,8 +215,15 @@ func (c *connAuthRespPayload) Pack(buf *bytebuf.ByteBuf, _ *Client) {
 func (c *connAuthRespPayload) Unpack(buf *bytebuf.ByteBuf, _ *Client) {
 	c.statusCode, _ = buf.ReadUInt32BE()
 	c.message = buf.ReadStringWithU32Length()
-	stime, _ := buf.ReadUInt64BE()
-	c.serverTime = stime
+	c.serverTime, _ = buf.ReadUInt64BE()
+	speed, _ := buf.ReadUInt16BE()
+	if speed == 0 {
+		c.speedLimit = 1000 / 1
+	} else if speed > 1000 {
+		c.speedLimit = 1000 / 1000
+	} else {
+		c.speedLimit = 1000 / speed
+	}
 }
 
 // PUSH消息包

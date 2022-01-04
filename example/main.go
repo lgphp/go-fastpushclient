@@ -43,7 +43,7 @@ func main() {
 
 func sendNotification(client *pushSDK.Client) {
 	// 发送100条消息
-	for i := 1; i <= 100; i++ {
+	for i := 1; i <= 1003; i++ {
 		body, _ := pushSDK.NewMessageBody(fmt.Sprintf("%s+:%v", "标题", i), "消息体", nil)
 		notification := pushSDK.NewPushNotification(TEST_ENV_USER_ID, pushSDK.LOW, body)
 		client.SendPushNotification(notification)

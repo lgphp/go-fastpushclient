@@ -6,7 +6,7 @@ require (
 	github.com/bep/debounce v1.2.0 // indirect
 	github.com/bitly/go-simplejson v0.5.0
 	github.com/chentaihan/aesCbc v0.0.0-20201028024852-1c4d1700b583
-	github.com/gammazero/workerpool v1.1.2 // indirect
+	github.com/gammazero/workerpool v1.1.2
 	github.com/go-logr/logr v1.2.2
 	github.com/go-logr/zapr v1.2.2
 	github.com/go-netty/go-netty v0.0.0-20210318115346-68000ac9a2c6

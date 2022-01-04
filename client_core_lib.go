@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/lgphp/go-fastpushclient/logger"
 	"github.com/pkg/errors"
+	"time"
 )
 
 func NewFastLivePushClient(appInfo AppInfo) *Client {
@@ -45,16 +46,27 @@ func (c *Client) BuildConnect() (*Client, error) {
 
 }
 
+func (c *Client) sendTask() {
+	for msg := range c.sendQueue {
+		pushmsg := msg
+		c.workerpool.Submit(func() {
+			if c.ch != nil || c.ch.IsActive() {
+				c.ch.Write(pushmsg)
+				c.sendListener(fmt.Sprintf("%s", pushmsg.messageID), nil)
+			} else {
+				c.sendListener(fmt.Sprintf("%s", pushmsg.messageID), errors.New("Connection has been closed"))
+			}
+		})
+		// speed control
+		time.Sleep(time.Millisecond * time.Duration(c.sendSpeed))
+	}
+}
+
 // 发送push通知
 func (c *Client) SendPushNotification(pushNotification PushNotification) {
 	if c.isSendNotification {
 		pushMessage := NewPushMessagePayloadFromPushNotification(pushNotification, Push, &c.appInfo)
-		if c.ch != nil || c.ch.IsActive() {
-			c.ch.Write(pushMessage)
-			c.sendListener(fmt.Sprintf("%s", pushMessage.messageID), nil)
-		} else {
-			c.sendListener(fmt.Sprintf("%s", pushMessage.messageID), errors.New("Connection has been closed"))
-		}
+		c.sendQueue <- pushMessage
 	} else {
 		c.sendListener(fmt.Sprintf("Didn't send push message:"), errors.New("Authentication of connection not finished"))
 	}
@@ -65,13 +77,7 @@ func (c *Client) SendPushNotification(pushNotification PushNotification) {
 func (c *Client) SendVoipNotification(pushNotification PushNotification) {
 	if c.isSendNotification {
 		pushMessage := NewPushMessagePayloadFromPushNotification(pushNotification, VOIP, &c.appInfo)
-		if c.ch != nil || c.ch.IsActive() {
-			c.ch.Write(pushMessage)
-			c.sendListener(fmt.Sprintf("%s", pushMessage.messageID), nil)
-		} else {
-			c.sendListener(fmt.Sprintf("%s", pushMessage.messageID), errors.New("Connection has been closed"))
-		}
-	} else {
+		c.sendQueue <- pushMessage
 		c.sendListener(fmt.Sprintf("Didn't send push message:"), errors.New("Authentication of connection not finished"))
 	}
 
@@ -83,12 +89,7 @@ type SmsMessage = PushNotification
 func (c *Client) SendSMSMessage(smsMessage SmsMessage) {
 	if c.isSendNotification {
 		pushMessage := NewPushMessagePayloadFromPushNotification(smsMessage, SMS, &c.appInfo)
-		if c.ch != nil || c.ch.IsActive() {
-			c.ch.Write(pushMessage)
-			c.sendListener(fmt.Sprintf("%s", pushMessage.messageID), nil)
-		} else {
-			c.sendListener(fmt.Sprintf("%s", pushMessage.messageID), errors.New("Connection has been closed"))
-		}
+		c.sendQueue <- pushMessage
 	} else {
 		c.sendListener(fmt.Sprintf("Didn't send push message:"), errors.New("Authentication of connection not finished"))
 	}

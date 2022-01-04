@@ -11,6 +11,16 @@ import (
 func Test_GetUUID(t *testing.T) {
 
 	println(fastuuid.MustNewGenerator().Hex128())
+	speedy := 911
+	s := 10
+	if speedy == 0 {
+		s = 1000 / 100
+	} else if speedy > 1000 {
+		s = 1000 / speedy
+	} else {
+		s = 1000 / speedy
+	}
+	println(s)
 }
 
 func TestZIP(t *testing.T) {

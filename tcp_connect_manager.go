@@ -93,6 +93,7 @@ func (c *Client) handleConnAuthResp(payload connAuthRespPayload) {
 		go c.startHeartbeatTask()
 		// 启动发送任务
 		go c.sendTask()
+		// 设置成功回调
 		c.initialListener(nil)
 	} else {
 		// 鉴权不通过

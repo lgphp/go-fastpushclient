@@ -58,12 +58,14 @@ func (c *Client) sendTask() {
 			}
 		})
 		// speed control
+		c.promiseConnected()
 		time.Sleep(time.Millisecond * time.Duration(c.sendSpeed))
 	}
 }
 
 // 发送push通知
 func (c *Client) SendPushNotification(pushNotification PushNotification) {
+
 	if c.isSendNotification {
 		pushMessage := NewPushMessagePayloadFromPushNotification(pushNotification, Push, &c.appInfo)
 		c.sendQueue <- pushMessage
@@ -75,6 +77,7 @@ func (c *Client) SendPushNotification(pushNotification PushNotification) {
 
 // 发送voip通知{pushkit / callkit }
 func (c *Client) SendVoipNotification(pushNotification PushNotification) {
+
 	if c.isSendNotification {
 		pushMessage := NewPushMessagePayloadFromPushNotification(pushNotification, VOIP, &c.appInfo)
 		c.sendQueue <- pushMessage
@@ -87,6 +90,7 @@ type SmsMessage = PushNotification
 
 // 发送sms
 func (c *Client) SendSMSMessage(smsMessage SmsMessage) {
+
 	if c.isSendNotification {
 		pushMessage := NewPushMessagePayloadFromPushNotification(smsMessage, SMS, &c.appInfo)
 		c.sendQueue <- pushMessage

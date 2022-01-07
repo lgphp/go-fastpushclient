@@ -33,6 +33,7 @@ func (c *Client) connectServer(ctx context.Context) error {
 			logger.Warnw("connect failed", err, "connect info:", addr)
 		} else {
 			c.setChannel(channel)
+			c.bootstrap = bootstrap
 			break
 		}
 	}
@@ -52,6 +53,10 @@ func (c *Client) connectServer(ctx context.Context) error {
 }
 
 func (c *Client) reConnectServer() {
+	if c.isRetryConnecting {
+		return
+	}
+	c.isRetryConnecting = true
 	logger.Warnw("reconnecting to PushGate server", errors.New("reason: disconnected"))
 	pushList, err := c.getPushGateIpList()
 	if err != nil {
@@ -63,6 +68,18 @@ func (c *Client) reConnectServer() {
 	// 发送ConnAuth
 	if err == nil {
 		c.sendConnAuth()
+		c.isRetryConnecting = false
+		c.retryCnt = 0
+	} else {
+		c.retryCnt++
+		time.Sleep(time.Second * time.Duration(c.retryCnt*20))
+		if c.retryCnt > 60 {
+			c.initialListener(errors.New("out of re-connect times, client will Shutdown!!!!!"))
+			c.bootstrap.Shutdown()
+			return
+		}
+		c.reConnectServer()
+		// 重试连接
 	}
 }
 
@@ -74,7 +91,6 @@ func (c *Client) promiseConnected() {
 
 //  发送连接认证
 func (c *Client) sendConnAuth() {
-	c.promiseConnected()
 	payload := newConnAuthPayload(c.clientId, c.appInfo)
 	c.ch.Write(payload)
 }

@@ -26,12 +26,15 @@ type Client struct {
 	// is auth of socket connection  passed ?
 	isSendNotification bool
 	// time difference between client and server
-	timeDiff   int64
-	httpClient HTTPClient
-	ctx        context.Context
-	sendQueue  chan PushMessagePayload
-	workerpool *workerpool.WorkerPool
-	sendSpeed  uint16
+	timeDiff          int64
+	httpClient        HTTPClient
+	ctx               context.Context
+	sendQueue         chan PushMessagePayload
+	workerpool        *workerpool.WorkerPool
+	sendSpeed         uint16
+	bootstrap         netty.Bootstrap
+	isRetryConnecting bool
+	retryCnt          uint16
 }
 
 func buildClient() *Client {

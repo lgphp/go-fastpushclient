@@ -104,7 +104,7 @@ func (c *Client) handleConnAuthResp(payload connAuthRespPayload) {
 		c.isSendNotification = true
 		//设置发送速度
 		c.sendSpeed = payload.speedLimit
-		logger.Infow(fmt.Sprintf("Connect Authentication Success , Send Speed Limited : %d /sec", c.sendSpeed))
+		logger.Infow(fmt.Sprintf("Connect Authentication Success , Send Speed Limited : %d /sec", 1000/c.sendSpeed))
 		// 发送心跳
 		go c.startHeartbeatTask()
 		// 启动发送任务

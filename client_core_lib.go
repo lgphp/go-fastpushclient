@@ -57,8 +57,8 @@ func (c *Client) sendTask() {
 				c.sendListener(fmt.Sprintf("%s", pushmsg.messageID), errors.New("Connection has been closed"))
 			}
 		})
-		// speed control
 		c.promiseConnected()
+		// speed control
 		time.Sleep(time.Millisecond * time.Duration(c.sendSpeed))
 	}
 }
@@ -97,5 +97,4 @@ func (c *Client) SendSMSMessage(smsMessage SmsMessage) {
 	} else {
 		c.sendListener(fmt.Sprintf("Didn't send push message:"), errors.New("Authentication of connection not finished"))
 	}
-
 }

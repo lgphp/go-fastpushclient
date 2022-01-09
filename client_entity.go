@@ -6,6 +6,7 @@ import (
 	"github.com/gammazero/workerpool"
 	"github.com/go-netty/go-netty"
 	"github.com/rogpeppe/fastuuid"
+	"go.uber.org/atomic"
 	"sync"
 )
 
@@ -33,19 +34,21 @@ type Client struct {
 	workerpool        *workerpool.WorkerPool
 	sendSpeed         uint16
 	bootstrap         netty.Bootstrap
-	isRetryConnecting bool
-	retryCnt          uint16
+	isRetryConnecting *atomic.Bool
+	retryCnt          *atomic.Int32
 }
 
 func buildClient() *Client {
 	return &Client{
-		wg:             &sync.WaitGroup{},
-		clientId:       fastuuid.MustNewGenerator().Hex128(),
-		pushGateIpList: make([]pushGateAddress, 0),
-		ctx:            context.Background(),
-		sendQueue:      make(chan PushMessagePayload, 1000), // 100个队列
-		workerpool:     workerpool.New(10),
-		sendSpeed:      uint16(30),
+		wg:                &sync.WaitGroup{},
+		clientId:          fastuuid.MustNewGenerator().Hex128(),
+		pushGateIpList:    make([]pushGateAddress, 0),
+		ctx:               context.Background(),
+		sendQueue:         make(chan PushMessagePayload, 1000), // 1000个队列
+		workerpool:        workerpool.New(10),
+		sendSpeed:         uint16(30),
+		isRetryConnecting: atomic.NewBool(false),
+		retryCnt:          atomic.NewInt32(0),
 	}
 }
 

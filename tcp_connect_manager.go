@@ -41,46 +41,55 @@ func (c *Client) connectServer(ctx context.Context) error {
 		select {
 		case <-ctx.Done():
 			c.initialListener(errors.New("connect to server timeout > 5 secs"))
+			c.reConnectServer()
 			return errors.New("connect to server timeout > 5 secs")
 		default:
 			if c.ch == nil || !c.ch.IsActive() {
 				c.initialListener(errors.New("can't connect to PushGate server , socket channel has nil or  inactive "))
 				return errors.New("can't connect to PushGate server, socket channel has nil or  inactive")
 			}
+
 			return nil
 		}
 	}
 }
 
 func (c *Client) reConnectServer() {
-	if c.isRetryConnecting {
+	if c.isRetryConnecting.Load() {
 		return
 	}
-	c.isRetryConnecting = true
-	logger.Warnw("reconnecting to PushGate server", errors.New("reason: disconnected"))
-	pushList, err := c.getPushGateIpList()
-	if err != nil {
-		logger.Warnw("can't re-connect to PushGate server", err)
-	}
-	c.pushGateIpList = pushList
-	// 连接服务端
-	err = c.connectServer(c.ctx)
-	// 发送ConnAuth
-	if err == nil {
-		c.sendConnAuth()
-		c.isRetryConnecting = false
-		c.retryCnt = 0
-	} else {
-		c.retryCnt++
-		time.Sleep(time.Second * time.Duration(c.retryCnt*20))
-		if c.retryCnt > 60 {
-			c.initialListener(errors.New("out of re-connect times, client will Shutdown!!!!!"))
-			c.bootstrap.Shutdown()
-			return
+	c.isRetryConnecting.Store(true)
+	go func() {
+		for {
+			c.retryCnt.Add(1)
+			logger.Warnw("reconnecting to PushGate server", errors.New("reason: disconnected"), "times", c.retryCnt)
+			// 重试连接
+			time.Sleep(time.Second * time.Duration((c.retryCnt.Load())*10))
+
+			if c.retryCnt.Load() > 61 {
+				c.initialListener(errors.New("out of re-connect times, client will Shutdown!!!!!"))
+				c.bootstrap.Shutdown()
+				return
+			}
+			pushList, err := c.getPushGateIpList()
+			if err != nil {
+				logger.Warnw("can't re-connect to PushGate server", err)
+				continue
+			}
+			c.pushGateIpList = pushList
+			// 连接服务端
+			err = c.connectServer(c.ctx)
+			// 发送ConnAuth
+			if err == nil {
+				c.sendConnAuth()
+				c.isRetryConnecting.Store(false)
+				c.retryCnt.Store(0)
+				return
+			}
 		}
-		c.reConnectServer()
-		// 重试连接
-	}
+
+	}()
+
 }
 
 func (c *Client) promiseConnected() {
@@ -132,6 +141,7 @@ func (c *Client) startHeartbeatTask() {
 			c.ch.Write(payload)
 			time.Sleep(time.Second * 15)
 		} else {
+			c.reConnectServer()
 			return
 		}
 

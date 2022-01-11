@@ -15,6 +15,10 @@ type pushGateAddress struct {
 	Port int
 }
 
+var (
+	Max_Send_Buffer_Size = 1000000
+)
+
 type Client struct {
 	wg                    *sync.WaitGroup
 	clientId              string
@@ -44,7 +48,7 @@ func buildClient() *Client {
 		clientId:          fastuuid.MustNewGenerator().Hex128(),
 		pushGateIpList:    make([]pushGateAddress, 0),
 		ctx:               context.Background(),
-		sendQueue:         make(chan PushMessagePayload, 1000), // 1000个队列
+		sendQueue:         make(chan PushMessagePayload, Max_Send_Buffer_Size),
 		workerpool:        workerpool.New(10),
 		sendSpeed:         uint16(30),
 		isRetryConnecting: atomic.NewBool(false),

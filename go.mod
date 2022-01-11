@@ -22,6 +22,7 @@ require (
 	github.com/rs/zerolog v1.26.1
 	github.com/thoas/go-funk v0.9.1 // indirect
 	github.com/wumansgy/goEncrypt v0.0.0-20210730092718-e359121aa81e
+	go.uber.org/atomic v1.7.0
 	go.uber.org/zap v1.19.1
 	moul.io/http2curl v1.0.0 // indirect
 )

@@ -15,10 +15,6 @@ type pushGateAddress struct {
 	Port int
 }
 
-var (
-	Max_Send_Buffer_Size = 1000000
-)
-
 type Client struct {
 	wg                    *sync.WaitGroup
 	clientId              string
@@ -31,29 +27,37 @@ type Client struct {
 	// is auth of socket connection  passed ?
 	isSendNotification bool
 	// time difference between client and server
-	timeDiff          int64
-	httpClient        HTTPClient
-	ctx               context.Context
-	sendQueue         chan PushMessagePayload
-	workerpool        *workerpool.WorkerPool
-	sendSpeed         uint16
-	bootstrap         netty.Bootstrap
-	isRetryConnecting *atomic.Bool
-	retryCnt          *atomic.Int32
+	timeDiff             int64
+	httpClient           HTTPClient
+	ctx                  context.Context
+	sendQueue            chan PushMessagePayload
+	workerpool           *workerpool.WorkerPool
+	sendSpeed            uint16
+	bootstrap            netty.Bootstrap
+	isRetryConnecting    *atomic.Bool
+	retryCnt             *atomic.Int32
+	max_Send_Buffer_Size uint32
 }
 
 func buildClient() *Client {
-	return &Client{
-		wg:                &sync.WaitGroup{},
-		clientId:          fastuuid.MustNewGenerator().Hex128(),
-		pushGateIpList:    make([]pushGateAddress, 0),
-		ctx:               context.Background(),
-		sendQueue:         make(chan PushMessagePayload, Max_Send_Buffer_Size),
-		workerpool:        workerpool.New(10),
-		sendSpeed:         uint16(30),
-		isRetryConnecting: atomic.NewBool(false),
-		retryCnt:          atomic.NewInt32(0),
+	client := &Client{
+		wg:                   &sync.WaitGroup{},
+		clientId:             fastuuid.MustNewGenerator().Hex128(),
+		pushGateIpList:       make([]pushGateAddress, 0),
+		ctx:                  context.Background(),
+		workerpool:           workerpool.New(10),
+		sendSpeed:            uint16(30),
+		isRetryConnecting:    atomic.NewBool(false),
+		retryCnt:             atomic.NewInt32(0),
+		max_Send_Buffer_Size: 10000,
 	}
+	client.sendQueue = make(chan PushMessagePayload, client.max_Send_Buffer_Size)
+	return client
+}
+
+func (c *Client) SetSendBuffSize(size uint32) *Client {
+	c.sendQueue = make(chan PushMessagePayload, size)
+	return c
 }
 
 func (c *Client) setAppinfo(appInfo AppInfo) {

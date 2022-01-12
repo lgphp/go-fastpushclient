@@ -34,7 +34,12 @@ func main() {
 	info := pushSDK.NewAppInfo(TEST_ENV_MERCHANT_ID,
 		TEST_ENV_APP_ID,
 		TEST_ENV_APP_KEY)
-	client, _ := pushSDK.NewFastLivePushClient(info).AddInitializedListener(initialSDKCallback).AddSendListener(sendCallBack).AddNotificationStatusListener(notificationCallBack).BuildConnect()
+	client := pushSDK.NewFastLivePushClient(info)
+	client = client.AddInitializedListener(initialSDKCallback)
+	client = client.AddSendListener(sendCallBack)
+	client = client.AddNotificationStatusListener(notificationCallBack)
+	client = client.SetSendBuffSize(1000)
+	client, _ = client.BuildConnect()
 	<-ch
 	sendNotification(client)
 	wg.Wait()

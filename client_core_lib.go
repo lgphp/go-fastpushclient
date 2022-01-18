@@ -68,7 +68,12 @@ func (c *Client) SendPushNotification(pushNotification PushNotification) {
 
 	if c.isSendNotification {
 		pushMessage := NewPushMessagePayloadFromPushNotification(pushNotification, Push, &c.appInfo)
-		c.sendQueue <- pushMessage
+		select {
+		case c.sendQueue <- pushMessage:
+		default:
+			c.sendListener(fmt.Sprintf("Send speed too fast. please send slowly"), errors.New("Send speed too fast. please send slowly"))
+		}
+
 	} else {
 		c.sendListener(fmt.Sprintf("Didn't send push message:"), errors.New("Authentication of connection not finished"))
 	}
@@ -80,7 +85,11 @@ func (c *Client) SendVoipNotification(pushNotification PushNotification) {
 
 	if c.isSendNotification {
 		pushMessage := NewPushMessagePayloadFromPushNotification(pushNotification, VOIP, &c.appInfo)
-		c.sendQueue <- pushMessage
+		select {
+		case c.sendQueue <- pushMessage:
+		default:
+			c.sendListener(fmt.Sprintf("Send speed too fast. please send slowly"), errors.New("Send speed too fast. please send slowly"))
+		}
 		c.sendListener(fmt.Sprintf("Didn't send push message:"), errors.New("Authentication of connection not finished"))
 	}
 
@@ -93,7 +102,11 @@ func (c *Client) SendSMSMessage(smsMessage SmsMessage) {
 
 	if c.isSendNotification {
 		pushMessage := NewPushMessagePayloadFromPushNotification(smsMessage, SMS, &c.appInfo)
-		c.sendQueue <- pushMessage
+		select {
+		case c.sendQueue <- pushMessage:
+		default:
+			c.sendListener(fmt.Sprintf("Send speed too fast. please send slowly"), errors.New("Send speed too fast. please send slowly"))
+		}
 	} else {
 		c.sendListener(fmt.Sprintf("Didn't send push message:"), errors.New("Authentication of connection not finished"))
 	}

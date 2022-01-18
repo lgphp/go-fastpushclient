@@ -38,7 +38,7 @@ func main() {
 	client = client.AddInitializedListener(initialSDKCallback)
 	client = client.AddSendListener(sendCallBack)
 	client = client.AddNotificationStatusListener(notificationCallBack)
-	client = client.SetSendBuffSize(1000)
+	client = client.SetSendBuffSize(10)
 	client, _ = client.BuildConnect()
 	<-ch
 	sendNotification(client)
@@ -47,8 +47,8 @@ func main() {
 
 func sendNotification(client *pushSDK.Client) {
 	// 发送100条消息
-	for i := 1; i <= 5000; i++ {
-		body, _ := pushSDK.NewMessageBody(fmt.Sprintf("%s+:%v", "标题", i), "消息体", nil)
+	for i := 1; i <= 100; i++ {
+		body, _ := pushSDK.NewMessageBody(fmt.Sprintf("%s:%v", "Golang标题", i), "Golang消息体", nil)
 		notification := pushSDK.NewPushNotification(TEST_ENV_USER_ID, pushSDK.LOW, body)
 		client.SendPushNotification(notification)
 	}
@@ -75,9 +75,9 @@ func notificationCallBack(messageId, toUserId, appId string, statusCode uint32, 
 
 // 发送消息回调
 func sendCallBack(messageId string, err error) {
-	//if err != nil {
-	//	logger.Warnw("发送失败:", err, "messageId", messageId)
-	//} else {
-	//	logger.Infow("发送成功", "messageId", messageId)
-	//}
+	if err != nil {
+		logger.Warnw("发送失败:", err, "messageId", messageId)
+	} else {
+		logger.Infow("发送成功", "messageId", messageId)
+	}
 }

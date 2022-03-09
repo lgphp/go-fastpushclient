@@ -90,7 +90,8 @@ func (c *Client) SendVoipNotification(pushNotification PushNotification) {
 		default:
 			c.sendListener(fmt.Sprintf("Send speed too fast. please send slowly"), errors.New("Send speed too fast. please send slowly"))
 		}
-		c.sendListener(fmt.Sprintf("Didn't send push message:"), errors.New("Authentication of connection not finished"))
+	} else {
+		c.sendListener(fmt.Sprintf("Didn't send pushkit message:"), errors.New("Authentication of connection not finished"))
 	}
 
 }
@@ -108,6 +109,6 @@ func (c *Client) SendSMSMessage(smsMessage SmsMessage) {
 			c.sendListener(fmt.Sprintf("Send speed too fast. please send slowly"), errors.New("Send speed too fast. please send slowly"))
 		}
 	} else {
-		c.sendListener(fmt.Sprintf("Didn't send push message:"), errors.New("Authentication of connection not finished"))
+		c.sendListener(fmt.Sprintf("Didn't send sms message:"), errors.New("Authentication of connection not finished"))
 	}
 }

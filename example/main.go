@@ -16,9 +16,9 @@ var (
 	ch = make(chan bool)
 	c  = atomic.NewInt64(0)
 	// 测试环境的相关配置
-	TEST_ENV_MERCHANT_ID = "a127297f117c4a3fb095a15443bc96fc"
-	TEST_ENV_APP_ID      = "b4722bb12f30485582fb3e3a5c6157c6"
-	TEST_ENV_APP_KEY     = "NUhONBRTxPxFtFkH78P9AJ2EDUJ1EeoaFzGVoJUz5BcYFtqiag0baRw61y1ycoZaYpkxp9BC08K2F8h2II4tyQ=="
+	TEST_ENV_MERCHANT_ID = "3dc2d214ab9e4daf9950ef657a156805"
+	TEST_ENV_APP_ID      = "41a5b4cbce864955b8a212dbcdb51409"
+	TEST_ENV_APP_KEY     = "+HBMq4BRiGq8mpCbce23/fxKJho1QVAZwppDVySFdrIolMNflXHPw1PW0TFjPPysg7Z4/lllDkui8UtDUUk4iA=="
 	TEST_ENV_USER_ID     = "8613810654610"
 
 	//本地环境相关配置
@@ -38,7 +38,7 @@ func main() {
 	client = client.AddInitializedListener(initialSDKCallback)
 	client = client.AddSendListener(sendCallBack)
 	client = client.AddNotificationStatusListener(notificationCallBack)
-	client = client.SetSendBuffSize(10)
+	client = client.SetSendBuffSize(10000)
 	client, _ = client.BuildConnect()
 	<-ch
 	sendNotification(client)
@@ -47,10 +47,10 @@ func main() {
 
 func sendNotification(client *pushSDK.Client) {
 	// 发送100条消息
-	for i := 1; i <= 100; i++ {
+	for i := 1; i <= 2; i++ {
 		body, _ := pushSDK.NewMessageBody(fmt.Sprintf("%s:%v", "Golang标题", i), "Golang消息体", nil)
 		notification := pushSDK.NewPushNotification(TEST_ENV_USER_ID, pushSDK.LOW, body)
-		client.SendPushNotification(notification)
+		client.SendSMSMessage(notification)
 	}
 
 }
@@ -67,7 +67,7 @@ func initialSDKCallback(err error) {
 
 func notificationCallBack(messageId, toUserId, appId string, statusCode uint32, statusText string) {
 	logger.Infow("投递结果", "messageId", messageId, "toUserId", toUserId, "statusText", statusText)
-	if statusCode == 1 {
+	if statusCode == 3 {
 		c.Add(1)
 		println("第", c.Load(), "条回执")
 	}

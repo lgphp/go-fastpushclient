@@ -35,7 +35,6 @@ func (h *CodecHandler) HandleRead(ctx netty.InboundContext, message netty.Messag
 	buffer := make([]byte, h.maxFrameLength)
 	reader := utils.MustToReader(message)
 	n, err := reader.Read(buffer)
-
 	if err != nil && err != io.EOF {
 		_ = ctx.Channel().Close()
 		return

@@ -37,10 +37,12 @@ func (h *CodecHandler) HandleRead(ctx netty.InboundContext, message netty.Messag
 	n, err := reader.Read(buffer)
 
 	if err != nil && err != io.EOF {
+		_ = ctx.Channel().Close()
 		return
 	}
 
 	if err != nil {
+		_ = ctx.Channel().Close()
 		return
 	}
 

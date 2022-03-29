@@ -1,6 +1,9 @@
 package fastpushclient
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/rogpeppe/fastuuid"
+)
 
 type MessageBody struct {
 	Title string            `json:"title,omitempty"`
@@ -23,6 +26,7 @@ func NewMessageBody(title, body string, attachmentData map[string]string) (Messa
 }
 
 type PushNotification struct {
+	msgId       string
 	toUid       string
 	priority    MessagePrior
 	messageBody MessageBody
@@ -31,9 +35,13 @@ type PushNotification struct {
 // 创建一条push通知
 func NewPushNotification(toUid string, priority MessagePrior, body MessageBody) PushNotification {
 	return PushNotification{
+		msgId:       fastuuid.MustNewGenerator().Hex128(),
 		toUid:       toUid,
 		priority:    priority,
 		messageBody: body,
 	}
+}
 
+func (p *PushNotification) GetMessageId() string {
+	return p.msgId
 }

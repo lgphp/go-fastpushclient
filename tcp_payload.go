@@ -5,7 +5,6 @@ import (
 	"github.com/lgphp/go-bytebuf"
 	"github.com/lgphp/go-fastpushclient/logger"
 	"github.com/lgphp/go-fastpushclient/utils"
-	"github.com/rogpeppe/fastuuid"
 	"github.com/wumansgy/goEncrypt"
 )
 
@@ -285,7 +284,7 @@ func (p *PushMessagePayload) Unpack(buf *bytebuf.ByteBuf, _ *Client) {
 
 // 创建一个新push通知
 func NewPushMessagePayloadFromPushNotification(n PushNotification, classifier NotificationClassify, app *AppInfo) PushMessagePayload {
-	messageId := fastuuid.MustNewGenerator().Hex128()
+	messageId := n.msgId
 	messageBody, _ := json.Marshal(n.messageBody)
 	return PushMessagePayload{
 		payloadCode: PushMessageCode,

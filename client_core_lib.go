@@ -112,3 +112,18 @@ func (c *Client) SendSMSMessage(smsMessage SmsMessage) {
 		c.sendListener(fmt.Sprintf("Didn't send sms message:"), errors.New("Authentication of connection not finished"))
 	}
 }
+
+// 发送email
+func (c *Client) SendEmail(pushNotification PushNotification) {
+
+	if c.isSendNotification {
+		pushMessage := NewPushMessagePayloadFromPushNotification(pushNotification, Email, &c.appInfo)
+		select {
+		case c.sendQueue <- pushMessage:
+		default:
+			c.sendListener(fmt.Sprintf("Send speed too fast. please send slowly"), errors.New("Send speed too fast. please send slowly"))
+		}
+	} else {
+		c.sendListener(fmt.Sprintf("Didn't send email message:"), errors.New("Authentication of connection not finished"))
+	}
+}

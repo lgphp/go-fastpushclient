@@ -12,7 +12,6 @@ import (
 
 const (
 	HTTP_RESPONSE_CODE_OK = 0
-	apiRoot               = "http://77.242.242.209:8080"
 	pushListEndpoint      = "/biz/push/list"
 )
 
@@ -23,7 +22,7 @@ func PrintHttpResponseError(err error, req interface{}) {
 // 根据AppID获取PushGateList
 func (c *Client) getPushGateIpList() ([]pushGateAddress, error) {
 	pushListReq := newPushListRequest(c.appInfo.appID)
-	response, body, err := c.httpClient.Post(fmt.Sprintf("%s%s", apiRoot, pushListEndpoint), pushListReq)
+	response, body, err := c.httpClient.Post(fmt.Sprintf("%s%s", c.apiRoot, pushListEndpoint), pushListReq)
 	if err == nil {
 		if response.StatusCode == http.StatusOK {
 			res, _ := simplejson.NewJson(body)

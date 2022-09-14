@@ -37,6 +37,7 @@ type Client struct {
 	isRetryConnecting    *atomic.Bool
 	retryCnt             *atomic.Int32
 	max_Send_Buffer_Size uint32
+	apiRoot              string
 }
 
 func buildClient() *Client {
@@ -55,6 +56,10 @@ func buildClient() *Client {
 	return client
 }
 
+func (c *Client) SetApiRoot(s string) *Client {
+	c.apiRoot = s
+	return c
+}
 func (c *Client) SetSendBuffSize(size uint32) *Client {
 	c.sendQueue = make(chan PushMessagePayload, size)
 	return c

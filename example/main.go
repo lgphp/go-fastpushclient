@@ -19,13 +19,15 @@ var (
 	TEST_ENV_MERCHANT_ID = "3dc2d214ab9e4daf9950ef657a156805"
 	TEST_ENV_APP_ID      = "41a5b4cbce864955b8a212dbcdb51409"
 	TEST_ENV_APP_KEY     = "+HBMq4BRiGq8mpCbce23/fxKJho1QVAZwppDVySFdrIolMNflXHPw1PW0TFjPPysg7Z4/lllDkui8UtDUUk4iA=="
-	TEST_ENV_USER_ID     = "8613810654610"
+	TEST_ENV_USER_ID     = "Gang.Luo@ctechm.com"
+	TEST_API_ROOT        = "http://77.242.242.209:8080" // 测试环境API_ROOT
 
 	//本地环境相关配置
 	LOCAL_ENV_MERCHANT_ID = "3527348b4ff04e988f3fadd7f1e4f155"
 	LOCAL_ENV_APP_ID      = "4fb367eabe8c45f2a1b6714c6e40fd19"
 	LOCAL_ENV_APP_KEY     = "fCCHFkVtMk7sf5XQmfyTpPvuVH0PKmUd559HUtTlDxCBg5y4P3SAcxnAgxCG/AuRO0y//ZbgwRQg1wCJGOWw/w=="
 	LOCAL_ENV_USER_ID     = "97158000000"
+	LOCAL_API_ROOT        = "http://77.242.242.209:8080" // 测试环境API_ROOT
 )
 
 func main() {
@@ -39,6 +41,7 @@ func main() {
 	client = client.AddSendListener(sendCallBack)
 	client = client.AddNotificationStatusListener(notificationCallBack)
 	client = client.SetSendBuffSize(10000)
+	client = client.SetApiRoot(TEST_API_ROOT)
 	client, _ = client.BuildConnect()
 	<-ch
 	sendNotification(client)
@@ -47,10 +50,10 @@ func main() {
 
 func sendNotification(client *pushSDK.Client) {
 	// 发送100条消息
-	for i := 1; i <= 2; i++ {
-		body, _ := pushSDK.NewMessageBody(fmt.Sprintf("%s:%v", "Golang标题", i), "Golang消息体", nil)
+	for i := 1; i <= 1; i++ {
+		body, _ := pushSDK.NewMessageBody(fmt.Sprintf("%s:%v", "邮件标题", i), "Golang邮件消息体", nil)
 		notification := pushSDK.NewPushNotification(TEST_ENV_USER_ID, pushSDK.LOW, body)
-		client.SendSMSMessage(notification)
+		client.SendEmail(notification)
 	}
 
 }

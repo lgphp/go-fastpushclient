@@ -38,6 +38,10 @@ var (
 	HCM           SPChannel = 12
 	APPLE_PUSHKIT SPChannel = 60
 	HW_PUSHKIT    SPChannel = 61
+	EMAIL         SPChannel = 59
+	ALIYUN_SMS    SPChannel = 102
+	TWILO_SMS     SPChannel = 101
+	CHUANGLAN_SMS SPChannel = 100
 
 	// Notification classifier enum
 	Push         NotificationClassify = 1
